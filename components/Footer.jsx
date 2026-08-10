@@ -32,7 +32,7 @@ export default function Footer() {
                 A
               </span>
               <span className="font-heading text-lg font-bold text-white">
-                Admission<span className="text-gold">Chalo</span>
+                Admission<span className="text-charcoal">Chalo</span>
               </span>
             </a>
 
@@ -43,7 +43,7 @@ export default function Footer() {
 
             <div className="mt-5 flex gap-3">
               {SOCIAL_LINKS.map((name) => (
-                <a key={name} href="#" aria-label={name} className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 font-body text-xs font-bold text-white/60 transition hover:border-gold hover:text-gold">
+                <a key={name} href="#" aria-label={name} className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 font-body text-xs font-bold text-white/60 transition hover:border-gold hover:text-charcoal">
                   {name.charAt(0)}
                 </a>
               ))}
@@ -58,7 +58,7 @@ export default function Footer() {
               <ul className="mt-4 flex flex-col gap-3">
                 {FOOTER_LINKS[heading].map((link) => (
                   <li key={link.label}>
-                    <a href={link.href} className="font-body text-sm font-normal text-white/50 transition hover:text-gold">
+                    <a href={link.href} className="font-body text-sm font-normal text-white/50 transition hover:text-charcoal">
                       {link.label}
                     </a>
                   </li>
@@ -97,13 +97,13 @@ export default function Footer() {
             (c) 2026 AdmissionChalo. All rights reserved. Sample data for demo purposes.
           </p>
           <div className="flex gap-5">
-            <a href="/privacy" className="font-body text-xs font-normal text-white/40 transition hover:text-gold">
+            <a href="/privacy" className="font-body text-xs font-normal text-white/40 transition hover:text-charcoal">
               Privacy
             </a>
-            <a href="/terms" className="font-body text-xs font-normal text-white/40 transition hover:text-gold">
+            <a href="/terms" className="font-body text-xs font-normal text-white/40 transition hover:text-charcoal">
               Terms
             </a>
-            <a href="/sitemap" className="font-body text-xs font-normal text-white/40 transition hover:text-gold">
+            <a href="/sitemap" className="font-body text-xs font-normal text-white/40 transition hover:text-charcoal">
               Sitemap
             </a>
           </div>
@@ -112,3 +112,5 @@ export default function Footer() {
     </footer>
   );
 }
+
+

@@ -26,7 +26,7 @@ export default function Home() {
       <Navbar />
       <main className="bg-graybg">
         <section className="mx-auto max-w-7xl px-6 pt-14 pb-10">
-          <p className="font-body text-xs font-bold uppercase tracking-[0.2em] text-gold-dark">
+          <p className="font-body text-xs font-bold uppercase tracking-[0.2em] text-charcoal">
             Admissions 2026 - Now open
           </p>
           <h1 className="mt-4 max-w-3xl font-heading text-4xl font-bold leading-[1.15] text-charcoal sm:text-5xl">
@@ -99,3 +99,5 @@ export default function Home() {
     </>
   );
 }
+
+

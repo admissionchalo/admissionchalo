@@ -41,7 +41,7 @@ export default function TopCollegesSection({ wishlist = [], onToggleWishlist, on
                     {col.shortName}
                   </h3>
                   <p className="flex items-center gap-1 text-[11px] text-charcoal/55 mt-0.5 m-0">
-                    <MapPin size={11} /> {col.location} · <span className="text-gold-dark font-semibold">{col.nirf}</span>
+                    <MapPin size={11} /> {col.location} · <span className="text-charcoal font-semibold">{col.nirf}</span>
                   </p>
                 </div>
                 <button
@@ -60,7 +60,7 @@ export default function TopCollegesSection({ wishlist = [], onToggleWishlist, on
                   <p className="text-[10px] text-charcoal/45 m-0 mb-0.5">Courses</p>
                   <p className="flex items-center gap-1 font-heading font-bold text-charcoal text-[12.5px] m-0">
                     {col.coursesOffered}
-                    <span className="flex items-center gap-0.5 text-[11px] font-bold text-gold-dark">
+                    <span className="flex items-center gap-0.5 text-[11px] font-bold text-charcoal">
                       <Star size={11} fill="#F9B929" color="#F9B929" /> {col.rating}
                     </span>
                   </p>

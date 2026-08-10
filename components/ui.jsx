@@ -2,13 +2,14 @@ export function SectionHeader({ title, subtitle, link }) {
   return (
     <div className="flex items-end justify-between mb-6">
       <div>
-        <p className="text-[11px] font-semibold tracking-[0.16em] uppercase text-[#F9B929] mb-1.5">
+        <p className="text-[11px] font-semibold tracking-[0.16em] uppercase text-[#2E2F31] mb-1.5">
           {subtitle}
         </p>
         <h2 className="text-[26px] sm:text-[30px] font-semibold text-[#2E2F31] leading-tight m-0">
           {title}
         </h2>
       </div>
+      
       {link && (
         <a
           href="#"

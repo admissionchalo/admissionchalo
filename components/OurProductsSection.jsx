@@ -27,3 +27,5 @@ export default function OurProductsSection({ onProductClick }) {
     </section>
   );
 }
+
+

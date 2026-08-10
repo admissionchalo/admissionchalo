@@ -113,7 +113,7 @@ export default function Navbar({ navLinks }) {
               <span className="text-white font-bold text-base">A</span>
             </div>
             <span className="font-semibold text-[17px] text-[#2E2F31]">
-              Admission<span className="text-gold-dark">Chalo</span>
+              Admission<span className="text-charcoal">Chalo</span>
             </span>
           </div>
 
@@ -182,17 +182,41 @@ export default function Navbar({ navLinks }) {
                 <p className="text-[10px] font-bold text-[#9CA3AF] uppercase tracking-widest mb-3">
                   Top {activeCategory} Colleges
                 </p>
-                <div className="grid grid-cols-2 gap-1">
-                  {activeCategoryData?.colleges.map((item, i) => (
-                    <div
-                      key={i}
-                      onClick={() => { router.push(item.path); closeAll(); }}
-                      className="px-3 py-2.5 rounded-lg transition-all duration-150 hover:bg-[#FFF6DF] cursor-pointer"
-                    >
-                      <p className="font-semibold text-sm text-[#2E2F31] m-0">{item.name}</p>
-                      <p className="text-[11px] text-[#9CA3AF] m-0">{item.desc}</p>
-                    </div>
-                  ))}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-[9px] font-bold text-[#B0B4BA] uppercase tracking-widest mb-2">
+                      College
+                    </p>
+                    {activeCategoryData?.colleges
+                      .filter((item) => !item.name.includes("University"))
+                      .map((item, i) => (
+                        <div
+                          key={i}
+                          onClick={() => { router.push(item.path); closeAll(); }}
+                          className="px-3 py-2.5 rounded-lg transition-all duration-150 hover:bg-[#FFF6DF] cursor-pointer"
+                        >
+                          <p className="font-semibold text-sm text-[#2E2F31] m-0">{item.name}</p>
+                          <p className="text-[11px] text-[#9CA3AF] m-0">{item.desc}</p>
+                        </div>
+                      ))}
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-bold text-[#B0B4BA] uppercase tracking-widest mb-2">
+                      University
+                    </p>
+                    {activeCategoryData?.colleges
+                      .filter((item) => item.name.includes("University"))
+                      .map((item, i) => (
+                        <div
+                          key={i}
+                          onClick={() => { router.push(item.path); closeAll(); }}
+                          className="px-3 py-2.5 rounded-lg transition-all duration-150 hover:bg-[#FFF6DF] cursor-pointer"
+                        >
+                          <p className="font-semibold text-sm text-[#2E2F31] m-0">{item.name}</p>
+                          <p className="text-[11px] text-[#9CA3AF] m-0">{item.desc}</p>
+                        </div>
+                      ))}
+                  </div>
                 </div>
               </div>
             </div>

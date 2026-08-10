@@ -1,4 +1,4 @@
-﻿import { Users, MessageCircleQuestion, ChevronRight } from "lucide-react";
+import { Users, MessageCircleQuestion, ChevronRight } from "lucide-react";
 
 const LINKS_EXPERT = ["Engineering UG", "Medicine UG"];
 const LINKS_QNA = ["Ask Now", "Browse QnA"];
@@ -118,3 +118,6 @@ export default function CounsellingSection() {
     </section>
   );
 }
+
+
+

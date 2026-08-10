@@ -80,7 +80,7 @@ function CertificatesList() {
               <span className="flex items-center gap-1 font-body text-xs text-charcoal/50">
                 <Clock size={12} /> {c.duration}
               </span>
-              <span className="flex items-center gap-1 text-[13px] font-bold text-gold-dark">
+              <span className="flex items-center gap-1 text-[13px] font-bold text-charcoal">
                 <Star size={13} fill="#F9B929" color="#F9B929" /> {c.rating}
               </span>
             </div>
