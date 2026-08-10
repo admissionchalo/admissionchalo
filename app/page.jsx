@@ -12,6 +12,7 @@ import NewsSection from "../components/NewsSection";
 import OurProductsSection from "../components/OurProductsSection";
 import TrendingSection from "../components/TrendingSection";
 import TestimonialsSection from "../components/TestimonialsSection";
+import ImpactSection from "../components/ImpactSection"
 import Footer from "../components/Footer";
 
 export default function Home() {
@@ -65,6 +66,7 @@ export default function Home() {
           <TrendingSection />
           <OurProductsSection onProductClick={() => {}} />
           <TestimonialsSection />
+          <ImpactSection/>
           <section className="mb-14">
             <div className="rounded-2xl bg-charcoal px-8 py-10 text-center sm:px-16">
               <h2 className="font-heading text-2xl font-bold text-white sm:text-3xl">
