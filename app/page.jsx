@@ -12,6 +12,7 @@ import NewsSection from "../components/NewsSection";
 import OurProductsSection from "../components/OurProductsSection";
 import TrendingSection from "../components/TrendingSection";
 import TestimonialsSection from "../components/TestimonialsSection";
+import Footer from "../components/Footer";
 
 export default function Home() {
   const [query, setQuery] = useState("");
@@ -23,7 +24,6 @@ export default function Home() {
   return (
     <>
       <Navbar />
-
       <main className="bg-graybg">
         <section className="mx-auto max-w-7xl px-6 pt-14 pb-10">
           <p className="font-body text-xs font-bold uppercase tracking-[0.2em] text-gold-dark">
@@ -36,7 +36,6 @@ export default function Home() {
             Search 6,200+ colleges in India, compare fees and placements, and
             track every entrance exam date that matters, all in one place.
           </p>
-
           <div className="mt-8 max-w-2xl rounded-2xl border border-charcoal/10 bg-white p-6 shadow-md">
             <label htmlFor="college-search" className="sr-only">Search college, course, or city</label>
             <div className="flex flex-col gap-3 sm:flex-row">
@@ -54,7 +53,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
         <div className="mx-auto max-w-7xl px-6">
           <UpcomingExamsSection />
           <CounsellingSection />
@@ -66,7 +64,6 @@ export default function Home() {
           <TrendingSection />
           <OurProductsSection onProductClick={() => {}} />
           <TestimonialsSection />
-
           <section className="mb-14">
             <div className="rounded-2xl bg-charcoal px-8 py-10 text-center sm:px-16">
               <h2 className="font-heading text-2xl font-bold text-white sm:text-3xl">
@@ -76,15 +73,11 @@ export default function Home() {
                 Talk to a free counsellor and get a shortlist based on your marks,
                 budget, and career goals.
               </p>
-              <a
-                href="/counselling"
-                className="mt-6 inline-block rounded-full bg-gold px-8 py-3 font-heading text-sm font-bold text-charcoal transition hover:bg-gold-dark"
-              >
+              <a href="/counselling" className="mt-6 inline-block rounded-full bg-gold px-8 py-3 font-heading text-sm font-bold text-charcoal transition hover:bg-gold-dark">
                 Book Free Counselling
               </a>
             </div>
           </section>
-
           <section className="mb-14 -mx-6 sm:mx-0">
             <div className="bg-yellow-50 px-6 py-8 sm:rounded-2xl sm:px-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
               <div>
@@ -95,27 +88,14 @@ export default function Home() {
                   Ask and get expert answers on exams, counselling, admissions, careers, and study options.
                 </p>
               </div>
-              <a
-                href="/qna"
-                className="flex-shrink-0 inline-block rounded-full bg-gold px-7 py-3 font-heading text-sm font-bold text-charcoal transition hover:bg-gold-dark whitespace-nowrap"
-              >
+              <a href="/qna" className="flex-shrink-0 inline-block rounded-full bg-gold px-7 py-3 font-heading text-sm font-bold text-charcoal transition hover:bg-gold-dark whitespace-nowrap">
                 Ask Now
               </a>
             </div>
           </section>
         </div>
       </main>
-
-      <footer className="bg-charcoal px-6 py-10">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 sm:flex-row">
-          <span className="font-heading text-sm font-bold text-white">
-            Shiksha<span className="text-gold">Today</span>
-          </span>
-          <p className="font-body text-xs font-normal text-white opacity-50">
-            (c) 2026 Shiksha Today. Sample data for demo purposes.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </>
   );
 }

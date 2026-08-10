@@ -9,13 +9,13 @@ module.exports = {
     extend: {
       colors: {
         gold: {
-          DEFAULT: "#F9B929",
-          light: "#FFCF4D",
-          dark: "#C99416",
+          DEFAULT: "#FFD400",
+          light: "#FFE14D",
+          dark: "#E6BF00",
         },
         charcoal: {
-          DEFAULT: "#2E2F31",
-          light: "#55565A",
+          DEFAULT: "#0A0A0A",
+          light: "#444444",
         },
         graybg: "#FAFAF9",
       },
