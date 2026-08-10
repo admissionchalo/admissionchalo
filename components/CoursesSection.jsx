@@ -5,7 +5,7 @@ export default function CoursesSection() {
   return (
     <section className="mb-14">
       <SectionHeader title="Browse by Stream" subtitle="Popular Courses" link="View All Courses" />
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(210px,1fr))] gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
         {courses.map((c, i) => {
           const Icon = c.icon;
           return (
@@ -30,5 +30,3 @@ export default function CoursesSection() {
     </section>
   );
 }
-
-

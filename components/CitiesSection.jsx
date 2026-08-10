@@ -23,7 +23,7 @@ export default function CitiesSection() {
   return (
     <section className="mb-14">
       <SectionHeader title="Browse Colleges by City" subtitle="Popular Locations" link="View All Cities" />
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         {CITIES.map((city) => {
           const isActive = activeCity === city.name;
           return (
@@ -69,5 +69,3 @@ export default function CitiesSection() {
     </section>
   );
 }
-
-
