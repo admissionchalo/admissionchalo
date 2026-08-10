@@ -54,12 +54,13 @@ export default function Home() {
           </div>
         </section>
         <div className="mx-auto max-w-7xl px-6">
+          <NewsSection />
           <UpcomingExamsSection />
           <CounsellingSection />
           <TopCollegesSection wishlist={wishlist} onToggleWishlist={toggleWishlist} onPredictorOpen={() => {}} />
           <PredictorsSection onPredictorClick={() => {}} />
           <CitiesSection />
-          <NewsSection />
+        
           <CoursesSection />
           <TrendingSection />
           <OurProductsSection onProductClick={() => {}} />
