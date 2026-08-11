@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { HelpCircle, Download, ArrowUpDown, MapPin, Star, Clock, X, ChevronDown } from "lucide-react";
 import colleges from "../../lib/colleges";
@@ -218,6 +218,8 @@ export default function CollegePage({ data }) {
   const [showCompare, setShowCompare] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const headerRef = useRef(null);
+  const [headerHeight, setHeaderHeight] = useState(220);
 
   const slugFromUrl = searchParams.get("tab") || "overview";
   const activeTab = SLUG_TO_TAB[slugFromUrl] || "Overview";
@@ -234,15 +236,31 @@ export default function CollegePage({ data }) {
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 768);
+
+    const measureHeader = () => {
+      if (headerRef.current) {
+        setHeaderHeight(headerRef.current.offsetHeight);
+      }
+    };
+
     const onScroll = () => setScrolled(window.scrollY > 5);
-    const onResize = () => setIsMobile(window.innerWidth < 768);
+    const onResize = () => {
+      setIsMobile(window.innerWidth < 768);
+      measureHeader();
+    };
+
+    measureHeader();
+    // Re-measure shortly after mount in case fonts/badges shift layout
+    const t = setTimeout(measureHeader, 150);
+
     window.addEventListener("scroll", onScroll);
     window.addEventListener("resize", onResize);
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
+      clearTimeout(t);
     };
-  }, []);
+  }, [activeTab]);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -268,7 +286,7 @@ export default function CollegePage({ data }) {
     <div style={{ background: "#f3f4f6", minHeight: "100vh", fontFamily: "'Segoe UI',-apple-system,sans-serif", color: "#111827" }}>
 
       {/* ── STICKY HEADER ── */}
-      <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000, background: "#fff", boxShadow: scrolled ? "0 2px 12px rgba(0,0,0,0.1)" : "0 1px 4px rgba(0,0,0,0.06)" }}>
+      <div ref={headerRef} style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000, background: "#fff", boxShadow: scrolled ? "0 2px 12px rgba(0,0,0,0.1)" : "0 1px 4px rgba(0,0,0,0.06)" }}>
 
         <div style={{ padding: isMobile ? "10px 14px" : "12px 24px", borderBottom: "1px solid #e5e7eb" }}>
 
@@ -386,7 +404,7 @@ export default function CollegePage({ data }) {
         </div>
       </div>
 
-      <div style={{ height: isMobile ? 200 : 220 }} />
+      <div style={{ height: headerHeight }} />
 
       <div style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "12px 12px 50px" : "18px 20px 50px", display: "flex", gap: 20, alignItems: "flex-start" }}>
 
