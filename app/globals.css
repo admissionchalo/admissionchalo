@@ -49,3 +49,5 @@ input:focus-visible {
   animation: hero-fade 15s infinite;
   will-change: opacity;
 }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }

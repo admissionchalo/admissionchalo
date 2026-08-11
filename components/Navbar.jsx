@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
-  GraduationCap, Building2, BookOpen, Plane, Users, Newspaper, FileText, ChevronDown,
+  Home, GraduationCap, Building2, BookOpen, Plane, Users, Newspaper, FileText, ChevronDown,
   Menu, X,
 } from "lucide-react";
 
@@ -74,6 +74,7 @@ const EXAMS = [
 ];
 
 const CATEGORY_ITEMS = [
+  { key: "Home", label: "Home", icon: Home, dropdown: false, route: "/" },
   { key: "College", label: "College", icon: GraduationCap, dropdown: true, route: "/colleges" },
   { key: "University", label: "University", icon: Building2, dropdown: true, route: "/universities" },
   { key: "All Courses", label: "All Courses", icon: BookOpen, dropdown: true, route: "/courses" },
@@ -89,7 +90,7 @@ export default function Navbar() {
   const [activeCategory, setActiveCategory] = useState("Engineering");
   const [activeExamStream, setActiveExamStream] = useState("Engineering");
   const [menuOpen, setMenuOpen] = useState(false);
-  const [openMobileGroup, setOpenMobileGroup] = useState(null); // accordion state on mobile
+  const [openMobileGroup, setOpenMobileGroup] = useState(null);
   const leaveTimer = useRef(null);
 
   const handleNavEnter = (item) => {
@@ -111,17 +112,22 @@ export default function Navbar() {
 
   return (
     <>
-      {/* ── Mobile trigger bar — hamburger + brand, only shown below md ── */}
+      {/* ── Mobile trigger bar — hamburger + brand + Login, only shown below md ── */}
       <div className="md:hidden flex items-center justify-between px-4 h-11 bg-gradient-to-b from-[#FBCE3E] to-[#F3B916] shadow-[0_2px_6px_rgba(0,0,0,0.06)]">
         <span className="font-heading font-extrabold text-charcoal text-[14px]">Explore</span>
-        <button
-          onClick={() => setMenuOpen((v) => !v)}
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
-          aria-expanded={menuOpen}
-          className="flex items-center justify-center w-8 h-8 rounded-full text-charcoal active:bg-charcoal/10"
-        >
-          {menuOpen ? <X size={20} strokeWidth={2.5} /> : <Menu size={20} strokeWidth={2.5} />}
-        </button>
+        <div className="flex items-center gap-2">
+          <button className="border border-charcoal/25 text-charcoal font-heading font-bold text-[11px] px-3.5 py-1.5 rounded-full active:bg-charcoal/10">
+            Login
+          </button>
+          <button
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            className="flex items-center justify-center w-8 h-8 rounded-full text-charcoal active:bg-charcoal/10"
+          >
+            {menuOpen ? <X size={20} strokeWidth={2.5} /> : <Menu size={20} strokeWidth={2.5} />}
+          </button>
+        </div>
       </div>
 
       {/* ── Desktop category bar ── */}
@@ -319,7 +325,6 @@ export default function Navbar() {
                   )}
                 </div>
 
-                {/* Expanded content per item, mobile-friendly single column */}
                 {isOpen && item.key !== "Exams" && (
                   <div className="bg-[#FAFAF9] px-5 py-2">
                     {item.key === "All Courses"

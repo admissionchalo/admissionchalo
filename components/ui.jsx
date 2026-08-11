@@ -1,4 +1,4 @@
-export function SectionHeader({ title, subtitle, link }) {
+export function SectionHeader({ title, subtitle, link, onLinkClick }) {
   return (
     <div className="flex items-end justify-between mb-6">
       <div>
@@ -9,14 +9,14 @@ export function SectionHeader({ title, subtitle, link }) {
           {title}
         </h2>
       </div>
-      
+
       {link && (
-        <a
-          href="#"
-          className="hidden sm:flex items-center gap-1 text-[13px] font-semibold text-[#2E2F31] no-underline hover:text-[#55565A] transition-colors whitespace-nowrap"
+        <button
+          onClick={onLinkClick}
+          className="hidden sm:flex items-center gap-1 text-[13px] font-semibold text-[#2E2F31] no-underline hover:text-[#55565A] transition-colors whitespace-nowrap bg-transparent border-0 cursor-pointer p-0"
         >
           {link} <span className="text-base leading-none">→</span>
-        </a>
+        </button>
       )}
     </div>
   );

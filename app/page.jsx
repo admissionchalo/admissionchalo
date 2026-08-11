@@ -7,7 +7,6 @@ import UpcomingExamsSection from "../components/UpcomingExamsSection";
 import CounsellingSection from "../components/CounsellingSection";
 import TopCollegesSection from "../components/TopCollegesSection";
 import PredictorsSection from "../components/PredictorsSection";
-import CitiesSection from "../components/CitiesSection";
 import CoursesSection from "../components/CoursesSection";
 import NewsSection from "../components/NewsSection";
 import OurProductsSection from "../components/OurProductsSection";
@@ -15,6 +14,7 @@ import TrendingSection from "../components/TrendingSection";
 import TestimonialsSection from "../components/TestimonialsSection";
 import ImpactSection from "../components/ImpactSection";
 import HeroSection from "../components/HeroBenner";
+import Footer from "../components/Footer"
 
 export default function Home() {
   const [query, setQuery] = useState("");
@@ -34,12 +34,11 @@ export default function Home() {
           <HeroSection/>
           <main className="bg-graybg">
       <div className="mx-auto max-w-7xl px-6">
+        <NewsSection />
           <UpcomingExamsSection />
           <CounsellingSection />
           <TopCollegesSection wishlist={wishlist} onToggleWishlist={toggleWishlist} onPredictorOpen={() => {}} />
           <PredictorsSection onPredictorClick={() => {}} />
-          <CitiesSection />
-          <NewsSection />
           <CoursesSection />
           <TrendingSection />
           <OurProductsSection onProductClick={() => {}} />
@@ -75,18 +74,12 @@ export default function Home() {
             </div>
           </section>
         </div>
+        
+    
       </main>
 
-      <footer className="bg-charcoal px-6 py-10">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 sm:flex-row">
-          <span className="font-heading text-sm font-bold text-white">
-            Shiksha<span className="text-white/70">Today</span>
-          </span>
-          <p className="font-body text-xs font-normal text-white/50">
-            © 2026 Shiksha Today. Sample data for demo purposes.
-          </p>
-        </div>
-      </footer>
+      
+      <Footer/>
     </>
   );
 }

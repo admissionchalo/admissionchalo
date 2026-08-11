@@ -27,25 +27,23 @@ export default function TopBar() {
         </div>
       </div>
 
-      {/* ── Mobile layout: two tight rows instead of stacked pills ── */}
-      <div className="sm:hidden bg-white border-b border-charcoal/10 px-4 py-2">
-        <div className="flex items-center justify-between mb-2">
-          <span className="font-heading font-extrabold text-charcoal text-[15px]">
+      {/* ── Mobile layout: single row — logo + full-width search (Login moved to Explore bar) ── */}
+      <div className="sm:hidden bg-white border-b border-charcoal/10 px-3 py-2">
+        <div className="flex items-center gap-2">
+          <span className="font-heading font-extrabold text-charcoal text-[13px] flex-shrink-0 whitespace-nowrap">
             Admission<span className="text-gold-dark">Chalo</span>
           </span>
-          <button className="flex-shrink-0 border border-charcoal/15 text-charcoal font-heading font-bold text-[12px] px-4 py-1.5 rounded-full active:bg-charcoal/5">
-            Login
-          </button>
-        </div>
-        <div className="flex items-center gap-2 bg-graybg border border-charcoal/10 rounded-full px-3.5 py-2">
-          <Search size={14} color="#8A8B8D" className="flex-shrink-0" />
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search colleges, exams, courses..."
-            className="flex-1 min-w-0 bg-transparent outline-none font-body text-[12.5px] text-charcoal placeholder:text-charcoal/40"
-          />
+
+          <div className="flex-1 min-w-0 flex items-center gap-1.5 bg-graybg border border-charcoal/10 rounded-full px-3 py-1.5">
+            <Search size={13} color="#8A8B8D" className="flex-shrink-0" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search colleges, exams, courses..."
+              className="flex-1 min-w-0 bg-transparent outline-none font-body text-[11.5px] text-charcoal placeholder:text-charcoal/40"
+            />
+          </div>
         </div>
       </div>
 

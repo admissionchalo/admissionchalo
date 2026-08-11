@@ -1,22 +1,39 @@
-import { Cog, Stethoscope, Briefcase, Scale, FileText } from "lucide-react";
-import { upcomingExams, streamBadgeColors } from "../lib/data";
+import { useState } from "react";
+import {
+  Atom, HeartPulse, LineChart, Gavel, Cog, PenTool, Briefcase, Stethoscope
+} from "lucide-react";
+import { upcomingExams } from "../lib/data";
 import { SectionHeader } from "./ui";
 
-const STREAM_ICONS = {
-  Engineering: Cog,
-  Medical: Stethoscope,
-  Management: Briefcase,
-  Law: Scale,
+const EXAM_ICONS = {
+  "JEE Main 2026": Atom,
+  "NEET UG 2026": HeartPulse,
+  "CAT 2026": LineChart,
+  "CLAT 2026": Gavel,
+  "BITSAT 2026": Cog,
+  "NATA 2026": PenTool,
+  "AIIMS UG 2026": Stethoscope,
+  "XAT 2026": Briefcase,
 };
 
+const BADGE_STYLE = { bg: "bg-amber-100", text: "text-amber-700" };
+const ICON_COLOR = "#D97706";
+
 export default function UpcomingExamsSection() {
+  const [showAll, setShowAll] = useState(false);
+  const visibleExams = showAll ? upcomingExams : upcomingExams.slice(0, 6);
+
   return (
     <section className="mb-14">
-      <SectionHeader title="Upcoming Entrance Exams" subtitle="Exam Calendar" link="View All Exams" />
+      <SectionHeader
+        title="Upcoming Entrance Exams"
+        subtitle="Exam Calendar"
+        link={showAll ? "Show Less" : "View All Exams"}
+        onLinkClick={() => setShowAll((prev) => !prev)}
+      />
       <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
-        {upcomingExams.map((ex, i) => {
-          const sc = streamBadgeColors[ex.stream] || { bg: "bg-slate-100", text: "text-slate-600" };
-          const Icon = STREAM_ICONS[ex.stream] || FileText;
+        {visibleExams.map((ex, i) => {
+          const Icon = EXAM_ICONS[ex.name] || Cog;
           return (
             <div
               key={i}
@@ -24,15 +41,15 @@ export default function UpcomingExamsSection() {
             >
               <div
                 className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-110"
-                style={{ background: `${ex.color}14` }}
+                style={{ background: `${ICON_COLOR}14` }}
               >
-                <Icon size={20} color={ex.color} strokeWidth={2.2} />
+                <Icon size={20} color={ICON_COLOR} strokeWidth={2.2} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-heading font-bold text-[14px] text-charcoal m-0 truncate">{ex.name}</p>
                 <p className="font-body text-[11px] text-charcoal/50 mt-0.5 m-0">{ex.date}</p>
               </div>
-              <span className={`${sc.bg} ${sc.text} text-[10.5px] px-2.5 py-1 rounded-full font-bold whitespace-nowrap`}>
+              <span className={`${BADGE_STYLE.bg} ${BADGE_STYLE.text} text-[10.5px] px-2.5 py-1 rounded-full font-bold whitespace-nowrap`}>
                 {ex.stream}
               </span>
             </div>
@@ -42,5 +59,3 @@ export default function UpcomingExamsSection() {
     </section>
   );
 }
-
-

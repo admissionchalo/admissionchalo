@@ -1,5 +1,9 @@
+"use client";
+
 import { courses } from "../lib/data";
 import { SectionHeader } from "./ui";
+
+const ICON_COLOR = "#F9B929";
 
 export default function CoursesSection() {
   return (
@@ -15,9 +19,9 @@ export default function CoursesSection() {
             >
               <div
                 className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-110"
-                style={{ background: `${c.color}14` }}
+                style={{ background: `${ICON_COLOR}14` }}
               >
-                <Icon size={22} color={c.color} strokeWidth={2.2} />
+                <Icon size={22} color={ICON_COLOR} strokeWidth={2.2} />
               </div>
               <div>
                 <p className="font-heading font-extrabold text-[15px] text-charcoal m-0">{c.name}</p>
