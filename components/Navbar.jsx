@@ -2,6 +2,10 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import {
+  GraduationCap, Building2, BookOpen, Plane, Users, Newspaper, FileText, ChevronDown,
+  Menu, X,
+} from "lucide-react";
 
 const ENGINEERING_COLLEGES = [
   { name: "GL Bajaj (GLBITM)", desc: "Greater Noida | NAAC A+", path: "/college/gl-bajaj" },
@@ -69,98 +73,114 @@ const EXAMS = [
   { name: "CLAT", links: ["Eligibility", "Syllabus", "Exam Pattern", "How to Prepare"] },
 ];
 
-const NAV_LINKS = ["Colleges", "Courses", "Exams", "Study Abroad", "News", "Rankings"];
-const NAV_ROUTES = {
-  Colleges: "/colleges",
-  Courses: "/courses",
-  Exams: "/exams",
-  "Study Abroad": "/study-abroad",
-  News: "/news",
-  Rankings: "/rankings",
-};
+const CATEGORY_ITEMS = [
+  { key: "College", label: "College", icon: GraduationCap, dropdown: true, route: "/colleges" },
+  { key: "University", label: "University", icon: Building2, dropdown: true, route: "/universities" },
+  { key: "All Courses", label: "All Courses", icon: BookOpen, dropdown: true, route: "/courses" },
+  { key: "Study Abroad", label: "Study Abroad", icon: Plane, dropdown: false, route: "/study-abroad" },
+  { key: "Counselling", label: "Counselling", icon: Users, dropdown: false, route: "/counselling" },
+  { key: "Latest Updates", label: "Latest Updates", icon: Newspaper, dropdown: false, route: "/news" },
+  { key: "Exams", label: "Exams", icon: FileText, dropdown: true, route: "/exams" },
+];
 
-export default function Navbar({ navLinks }) {
+export default function Navbar() {
   const router = useRouter();
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [activeCategory, setActiveCategory] = useState("Engineering");
   const [activeExamStream, setActiveExamStream] = useState("Engineering");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [openMobileGroup, setOpenMobileGroup] = useState(null); // accordion state on mobile
   const leaveTimer = useRef(null);
 
-  const handleNavEnter = (link) => {
+  const handleNavEnter = (item) => {
     clearTimeout(leaveTimer.current);
-    if (["Colleges", "Courses", "Exams"].includes(link)) setActiveDropdown(link);
-    else setActiveDropdown(null);
+    setActiveDropdown(item.dropdown ? item.key : null);
   };
   const handleNavLeave = () => { leaveTimer.current = setTimeout(() => setActiveDropdown(null), 150); };
   const handleMenuEnter = () => clearTimeout(leaveTimer.current);
   const handleMenuLeave = () => { leaveTimer.current = setTimeout(() => setActiveDropdown(null), 150); };
-  const closeAll = () => { setActiveDropdown(null); setMenuOpen(false); };
-  const handleNavClick = (link) => { router.push(NAV_ROUTES[link]); closeAll(); };
+  const closeAll = () => { setActiveDropdown(null); setMenuOpen(false); setOpenMobileGroup(null); };
+  const handleNavClick = (item) => {
+    if (!item.dropdown) {
+      router.push(item.route);
+      closeAll();
+    }
+  };
 
-  const links = navLinks || NAV_LINKS;
   const activeCategoryData = COLLEGE_CATEGORIES.find((c) => c.label === activeCategory);
 
   return (
     <>
-      <nav className="bg-white/95 backdrop-blur border-b border-[#2E2F31]/8 sticky top-0 z-50">
-        <div className="max-w-[1280px] mx-auto px-6 flex items-center justify-between h-16">
-          <div
-            className="flex items-center gap-2.5 cursor-pointer flex-shrink-0"
-            onClick={() => { router.push("/"); closeAll(); }}
-          >
-            <div className="bg-gradient-to-br from-[#2E2F31] to-[#55565A] rounded-xl w-9 h-9 flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-bold text-base">A</span>
-            </div>
-            <span className="font-semibold text-[17px] text-[#2E2F31]">
-              Admission<span className="text-charcoal">Chalo</span>
-            </span>
-          </div>
+      {/* ── Mobile trigger bar — hamburger + brand, only shown below md ── */}
+      <div className="md:hidden flex items-center justify-between px-4 h-11 bg-gradient-to-b from-[#FBCE3E] to-[#F3B916] shadow-[0_2px_6px_rgba(0,0,0,0.06)]">
+        <span className="font-heading font-extrabold text-charcoal text-[14px]">Explore</span>
+        <button
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={menuOpen}
+          className="flex items-center justify-center w-8 h-8 rounded-full text-charcoal active:bg-charcoal/10"
+        >
+          {menuOpen ? <X size={20} strokeWidth={2.5} /> : <Menu size={20} strokeWidth={2.5} />}
+        </button>
+      </div>
 
-          <div className="hidden md:flex items-center gap-1" onMouseLeave={handleMenuLeave} onMouseEnter={handleMenuEnter}>
-            {links.map((link) => (
-              <div
-                key={link}
-                onMouseEnter={() => handleNavEnter(link)}
-                onClick={() => (["Colleges", "Courses", "Exams"].includes(link) ? null : handleNavClick(link))}
-                className={`px-4 py-2 text-[14px] font-medium cursor-pointer rounded-lg transition-colors ${
-                  activeDropdown === link ? "text-[#2E2F31] bg-[#FFF6DF]" : "text-[#374151] hover:text-[#2E2F31]"
-                }`}
-              >
-                {link}
+      {/* ── Desktop category bar ── */}
+      <div
+        className="hidden md:block relative bg-gradient-to-b from-[#FBCE3E] to-[#F3B916] shadow-[0_1px_0_rgba(255,255,255,0.4)_inset,0_2px_6px_rgba(0,0,0,0.06)]"
+        onMouseLeave={handleNavLeave}
+        onMouseEnter={handleMenuEnter}
+      >
+        <div className="max-w-[1280px] mx-auto px-6 flex items-center h-[34px]">
+          {CATEGORY_ITEMS.map((item, idx) => {
+            const Icon = item.icon;
+            const isActive = activeDropdown === item.key;
+            return (
+              <div key={item.key} className="flex items-center h-full">
+                {idx !== 0 && <span className="w-px h-3.5 bg-charcoal/10 mx-1" />}
+                <div
+                  onMouseEnter={() => handleNavEnter(item)}
+                  onClick={() => handleNavClick(item)}
+                  className="relative flex items-center gap-[6px] px-3 h-full cursor-pointer group"
+                >
+                  <Icon
+                    size={13}
+                    strokeWidth={2.25}
+                    className={`transition-colors ${isActive ? "text-charcoal" : "text-charcoal/55 group-hover:text-charcoal/80"}`}
+                  />
+                  <span
+                    className={`whitespace-nowrap text-[12px] font-bold tracking-[0.01em] transition-colors ${
+                      isActive ? "text-charcoal" : "text-charcoal/80 group-hover:text-charcoal"
+                    }`}
+                  >
+                    {item.label}
+                  </span>
+                  {item.dropdown && (
+                    <ChevronDown
+                      size={11}
+                      strokeWidth={2.5}
+                      className={`transition-transform duration-200 text-charcoal/45 ${isActive ? "rotate-180 text-charcoal" : ""}`}
+                    />
+                  )}
+                  <span
+                    className={`absolute left-4 right-4 -bottom-px h-[2.5px] rounded-full bg-charcoal transition-all duration-200 ${
+                      isActive ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0 group-hover:opacity-40 group-hover:scale-x-100"
+                    }`}
+                  />
+                </div>
               </div>
-            ))}
-          </div>
-
-          <div className="hidden md:flex items-center gap-2 flex-shrink-0">
-            <button
-              onClick={() => router.push("/login")}
-              className="px-4 py-2 border border-[#2E2F31]/15 text-[#2E2F31] rounded-lg font-semibold text-[13px] bg-transparent cursor-pointer hover:bg-[#FAFAF9] transition-colors"
-            >
-              Login
-            </button>
-            <button
-              onClick={() => router.push("/register")}
-              className="px-4 py-2 bg-gradient-to-r from-[#2E2F31] to-[#55565A] text-white rounded-lg font-semibold text-[13px] border-none cursor-pointer hover:opacity-90 transition-opacity shadow-sm"
-            >
-              Register Free
-            </button>
-          </div>
-
-          <button className="md:hidden text-2xl text-[#2E2F31]" onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? "✕" : "☰"}
-          </button>
+            );
+          })}
         </div>
-      </nav>
+      </div>
 
-      {/* Mega menu */}
+      {/* Mega menu (desktop only) */}
       {activeDropdown && (
         <div
           className="hidden md:block absolute left-0 right-0 bg-white border-b border-[#2E2F31]/8 shadow-[0_20px_48px_rgba(22,26,50,0.12)] z-40"
           onMouseEnter={handleMenuEnter}
           onMouseLeave={handleMenuLeave}
         >
-          {activeDropdown === "Colleges" && (
+          {(activeDropdown === "College" || activeDropdown === "University") && (
             <div className="flex max-w-[1280px] mx-auto" style={{ maxHeight: 460 }}>
               <div className="w-52 flex-shrink-0 bg-[#FAFAF9] border-r border-[#2E2F31]/8 py-3">
                 {COLLEGE_CATEGORIES.map((cat) => (
@@ -180,49 +200,31 @@ export default function Navbar({ navLinks }) {
               </div>
               <div className="flex-1 px-8 py-6 overflow-y-auto">
                 <p className="text-[10px] font-bold text-[#9CA3AF] uppercase tracking-widest mb-3">
-                  Top {activeCategory} Colleges
+                  Top {activeCategory} {activeDropdown === "University" ? "Universities" : "Colleges"}
                 </p>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <p className="text-[9px] font-bold text-[#B0B4BA] uppercase tracking-widest mb-2">
-                      College
-                    </p>
-                    {activeCategoryData?.colleges
-                      .filter((item) => !item.name.includes("University"))
-                      .map((item, i) => (
-                        <div
-                          key={i}
-                          onClick={() => { router.push(item.path); closeAll(); }}
-                          className="px-3 py-2.5 rounded-lg transition-all duration-150 hover:bg-[#FFF6DF] cursor-pointer"
-                        >
-                          <p className="font-semibold text-sm text-[#2E2F31] m-0">{item.name}</p>
-                          <p className="text-[11px] text-[#9CA3AF] m-0">{item.desc}</p>
-                        </div>
-                      ))}
-                  </div>
-                  <div>
-                    <p className="text-[9px] font-bold text-[#B0B4BA] uppercase tracking-widest mb-2">
-                      University
-                    </p>
-                    {activeCategoryData?.colleges
-                      .filter((item) => item.name.includes("University"))
-                      .map((item, i) => (
-                        <div
-                          key={i}
-                          onClick={() => { router.push(item.path); closeAll(); }}
-                          className="px-3 py-2.5 rounded-lg transition-all duration-150 hover:bg-[#FFF6DF] cursor-pointer"
-                        >
-                          <p className="font-semibold text-sm text-[#2E2F31] m-0">{item.name}</p>
-                          <p className="text-[11px] text-[#9CA3AF] m-0">{item.desc}</p>
-                        </div>
-                      ))}
-                  </div>
+                <div className="grid grid-cols-2 gap-x-6 gap-y-1">
+                  {activeCategoryData?.colleges
+                    .filter((i) =>
+                      activeDropdown === "University"
+                        ? i.name.includes("University")
+                        : !i.name.includes("University")
+                    )
+                    .map((item, i) => (
+                      <div
+                        key={i}
+                        onClick={() => { router.push(item.path); closeAll(); }}
+                        className="px-3 py-2.5 rounded-lg transition-all duration-150 hover:bg-[#FFF6DF] cursor-pointer"
+                      >
+                        <p className="font-semibold text-sm text-[#2E2F31] m-0">{item.name}</p>
+                        <p className="text-[11px] text-[#9CA3AF] m-0">{item.desc}</p>
+                      </div>
+                    ))}
                 </div>
               </div>
             </div>
           )}
 
-          {activeDropdown === "Courses" && (
+          {activeDropdown === "All Courses" && (
             <div className="max-w-[1280px] mx-auto px-8 py-6">
               <p className="text-[10px] font-bold text-[#9CA3AF] uppercase tracking-widest mb-3">Popular Courses</p>
               <div className="grid grid-cols-4 gap-6">
@@ -286,26 +288,82 @@ export default function Navbar({ navLinks }) {
         </div>
       )}
 
-      {/* Mobile menu */}
+      {/* ── Mobile menu — accordion style, replaces old flat list ── */}
       {menuOpen && (
-        <div className="md:hidden bg-white border-t border-[#2E2F31]/8 shadow-lg" style={{ maxHeight: "80vh", overflowY: "auto" }}>
-          {links.map((link) => (
-            <div
-              key={link}
-              onClick={() => handleNavClick(link)}
-              className="px-5 py-3.5 text-[14px] font-medium text-[#374151] border-b border-[#2E2F31]/6 cursor-pointer hover:bg-[#FAFAF9]"
-            >
-              {link}
-            </div>
-          ))}
-          <div className="flex gap-2 px-5 py-4">
-            <button onClick={() => { router.push("/login"); closeAll(); }} className="flex-1 py-2.5 border border-[#2E2F31] text-[#2E2F31] rounded-lg font-semibold text-[13px] bg-transparent cursor-pointer">
-              Login
-            </button>
-            <button onClick={() => { router.push("/register"); closeAll(); }} className="flex-1 py-2.5 bg-[#2E2F31] text-white rounded-lg font-semibold text-[13px] border-none cursor-pointer">
-              Register Free
-            </button>
-          </div>
+        <div className="md:hidden bg-white border-t border-[#2E2F31]/8 shadow-lg" style={{ maxHeight: "75vh", overflowY: "auto" }}>
+          {CATEGORY_ITEMS.map((item) => {
+            const Icon = item.icon;
+            const isOpen = openMobileGroup === item.key;
+            return (
+              <div key={item.key} className="border-b border-[#2E2F31]/6">
+                <div
+                  onClick={() => {
+                    if (item.dropdown) {
+                      setOpenMobileGroup(isOpen ? null : item.key);
+                    } else {
+                      router.push(item.route);
+                      closeAll();
+                    }
+                  }}
+                  className="flex items-center justify-between gap-3 px-5 py-3.5 text-[14px] font-bold text-[#374151] cursor-pointer active:bg-[#FAFAF9]"
+                >
+                  <span className="flex items-center gap-3">
+                    <Icon size={17} className="text-[#9CA3AF]" />
+                    {item.label}
+                  </span>
+                  {item.dropdown && (
+                    <ChevronDown
+                      size={15}
+                      className={`text-[#9CA3AF] transition-transform ${isOpen ? "rotate-180" : ""}`}
+                    />
+                  )}
+                </div>
+
+                {/* Expanded content per item, mobile-friendly single column */}
+                {isOpen && item.key !== "Exams" && (
+                  <div className="bg-[#FAFAF9] px-5 py-2">
+                    {item.key === "All Courses"
+                      ? POPULAR_COURSES.flat().map((c, i) => (
+                          <div
+                            key={i}
+                            onClick={() => { router.push(`/courses?q=${encodeURIComponent(c)}`); closeAll(); }}
+                            className="text-[13px] text-[#374151] py-2 border-b border-[#2E2F31]/5 active:text-[#2E2F31]"
+                          >
+                            {c}
+                          </div>
+                        ))
+                      : COLLEGE_CATEGORIES.flatMap((cat) => cat.colleges)
+                          .filter((c, i, arr) => arr.findIndex((x) => x.path === c.path) === i)
+                          .filter((c) => (item.key === "University" ? c.name.includes("University") : !c.name.includes("University")))
+                          .map((c, i) => (
+                            <div
+                              key={i}
+                              onClick={() => { router.push(c.path); closeAll(); }}
+                              className="py-2 border-b border-[#2E2F31]/5"
+                            >
+                              <p className="text-[13px] font-semibold text-[#2E2F31] m-0">{c.name}</p>
+                              <p className="text-[11px] text-[#9CA3AF] m-0">{c.desc}</p>
+                            </div>
+                          ))}
+                  </div>
+                )}
+
+                {isOpen && item.key === "Exams" && (
+                  <div className="bg-[#FAFAF9] px-5 py-2">
+                    {EXAMS.map((exam, i) => (
+                      <div
+                        key={i}
+                        onClick={() => { router.push(`/exams/${exam.name.toLowerCase().replace(/\s+/g, "-")}`); closeAll(); }}
+                        className="text-[13px] font-semibold text-[#374151] py-2 border-b border-[#2E2F31]/5"
+                      >
+                        {exam.name}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </>
