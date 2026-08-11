@@ -14,6 +14,7 @@ import OurProductsSection from "../components/OurProductsSection";
 import TrendingSection from "../components/TrendingSection";
 import TestimonialsSection from "../components/TestimonialsSection";
 import ImpactSection from "../components/ImpactSection";
+import HeroSection from "../components/HeroBenner";
 
 export default function Home() {
   const [query, setQuery] = useState("");
@@ -29,39 +30,10 @@ export default function Home() {
         <Navbar />
       </div>
 
-      <main className="bg-graybg">
-        {/* Hero — single H1 for the page */}
-        <section className="mx-auto max-w-7xl px-6 pt-14 pb-10">
-          <p className="font-body text-xs font-bold uppercase tracking-[0.2em] text-charcoal">
-            Admissions 2026 · Now open
-          </p>
-          <h1 className="mt-4 max-w-3xl font-heading text-4xl font-bold leading-[1.15] text-charcoal sm:text-5xl">
-            Find the Right College, Without the Guesswork
-          </h1>
-          <p className="mt-4 max-w-xl font-body text-base font-normal text-charcoal/70">
-            Search 6,200+ colleges in India, compare fees and placements, and
-            track every entrance exam date that matters — all in one place.
-          </p>
-
-          <div className="mt-8 max-w-2xl rounded-2xl border border-charcoal/10 bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.06)]">
-            <label htmlFor="college-search" className="sr-only">Search college, course, or city</label>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <input
-                id="college-search"
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search college, course, or city…"
-                className="flex-1 rounded-xl border border-charcoal/15 bg-graybg px-4 py-3 font-body text-sm text-charcoal outline-none placeholder:text-charcoal/40"
-              />
-              <button className="rounded-xl bg-charcoal px-6 py-3 font-heading text-sm font-bold text-white transition hover:bg-gold hover:text-charcoal">
-                Search
-              </button>
-            </div>
-          </div>
-        </section>
-
-        <div className="mx-auto max-w-7xl px-6">
+      
+          <HeroSection/>
+          <main className="bg-graybg">
+      <div className="mx-auto max-w-7xl px-6">
           <UpcomingExamsSection />
           <CounsellingSection />
           <TopCollegesSection wishlist={wishlist} onToggleWishlist={toggleWishlist} onPredictorOpen={() => {}} />
