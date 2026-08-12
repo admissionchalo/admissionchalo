@@ -11,15 +11,14 @@ export default function FeaturedColleges() {
           </span>
         </div>
 
-        {/* Mobile: vertical snap slider, fixed height, swipe up/down through cards */}
-        {/* Desktop (sm+): original horizontal grid */}
         <div
-          className="flex max-h-[280px] flex-1 snap-y snap-mandatory flex-col divide-y divide-charcoal/10 overflow-y-auto sm:grid sm:max-h-none sm:grid-cols-2 sm:snap-none sm:divide-x sm:divide-y-0 sm:overflow-visible lg:grid-cols-4"
+          className="flex flex-1 snap-x snap-mandatory divide-x divide-charcoal/10 overflow-x-auto sm:grid sm:grid-cols-2 sm:snap-none sm:overflow-visible lg:grid-cols-4 [&::-webkit-scrollbar]:hidden"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {featuredColleges.map((college) => (
             <div
               key={college.name}
-              className="group flex shrink-0 snap-start flex-col justify-between transition-colors hover:bg-amber-50/30 sm:shrink"
+              className="group flex w-full shrink-0 snap-center flex-col justify-between transition-colors hover:bg-amber-50/30 sm:w-auto sm:shrink"
             >
               <div className="flex items-start gap-2 px-3 py-2.5 sm:py-2">
                 <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded border border-amber-200 bg-amber-50">
@@ -71,9 +70,8 @@ export default function FeaturedColleges() {
         </div>
       </div>
 
-      {/* Mobile-only hint that this list scrolls */}
       <p className="mt-1.5 text-center font-body text-[10px] text-charcoal/35 sm:hidden">
-        Swipe up for more colleges
+        Swipe for more colleges →
       </p>
     </section>
   );
