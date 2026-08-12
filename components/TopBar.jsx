@@ -1,10 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Search, Phone, GraduationCap, FileText, Megaphone } from "lucide-react";
 import { announcements } from "../lib/data";
 
 const ICONS = { GraduationCap, FileText, Megaphone };
+
+// Logo path — put the actual file at /public/logo.png (or swap for a Cloudinary URL)
+const LOGO_SRC = "/AC-LOGO-PNG.png";
 
 export default function TopBar() {
   const [query, setQuery] = useState("");
@@ -30,9 +34,14 @@ export default function TopBar() {
       {/* ── Mobile layout: single row — logo + full-width search (Login moved to Explore bar) ── */}
       <div className="sm:hidden bg-white border-b border-charcoal/10 px-3 py-2">
         <div className="flex items-center gap-2">
-          <span className="font-heading font-extrabold text-charcoal text-[13px] flex-shrink-0 whitespace-nowrap">
-            Admission<span className="text-gold-dark">Chalo</span>
-          </span>
+          <Image
+            src={LOGO_SRC}
+            alt="AdmissionChalo"
+            width={110}
+            height={24}
+            priority
+            className="flex-shrink-0 h-[22px] w-auto object-contain"
+          />
 
           <div className="flex-1 min-w-0 flex items-center gap-1.5 bg-graybg border border-charcoal/10 rounded-full px-3 py-1.5">
             <Search size={13} color="#8A8B8D" className="flex-shrink-0" />
@@ -50,9 +59,14 @@ export default function TopBar() {
       {/* ── Desktop/tablet layout: original single row, unchanged ── */}
       <div className="hidden sm:block bg-white border-b border-charcoal/10">
         <div className="max-w-7xl mx-auto flex items-center gap-4 px-6 py-2.5">
-          <span className="font-heading font-extrabold text-charcoal text-[15px] flex-shrink-0 whitespace-nowrap">
-            Admission<span className="text-gold-dark">Chalo</span>
-          </span>
+          <Image
+            src={LOGO_SRC}
+            alt="AdmissionChalo"
+            width={140}
+            height={30}
+            priority
+            className="flex-shrink-0 h-[28px] w-auto object-contain"
+          />
 
           <div className="flex-1 flex items-center gap-2 bg-graybg border border-charcoal/10 rounded-full px-4 py-1.5">
             <Search size={14} color="#8A8B8D" />
