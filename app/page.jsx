@@ -3,6 +3,7 @@
 import { useState } from "react";
 import TopBar from "../components/TopBar";
 import Navbar from "../components/Navbar";
+import FeaturedColleges from "../components/FeaturedColleges"
 import UpcomingExamsSection from "../components/UpcomingExamsSection";
 import CounsellingSection from "../components/CounsellingSection";
 import TopCollegesSection from "../components/TopCollegesSection";
@@ -12,7 +13,7 @@ import NewsSection from "../components/NewsSection";
 import OurProductsSection from "../components/OurProductsSection";
 import TrendingSection from "../components/TrendingSection";
 import TestimonialsSection from "../components/TestimonialsSection";
-import ImpactSection from "../components/ImpactSection";
+import CollegeVideos from "../components/CollegeVideos"
 import HeroSection from "../components/HeroBenner";
 import Footer from "../components/Footer"
 
@@ -28,10 +29,12 @@ export default function Home() {
       <div className="sticky top-0 z-50">
         <TopBar />
         <Navbar />
+
       </div>
 
       
           <HeroSection/>
+          <FeaturedColleges/>
           <main className="bg-graybg">
       <div className="mx-auto max-w-7xl px-6">
         <NewsSection />
@@ -43,7 +46,7 @@ export default function Home() {
           <TrendingSection />
           <OurProductsSection onProductClick={() => {}} />
           <TestimonialsSection />
-          <ImpactSection />
+         <CollegeVideos/>
 
           {/* CTA */}
           <section className="mb-14">
