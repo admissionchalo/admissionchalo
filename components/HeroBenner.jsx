@@ -4,40 +4,49 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { heroBanners } from "../lib/data";
 
-// The perceived "zoom" wasn't a resize bug — it was the mobile crop shape
-// being TOO different from the desktop one. Desktop is a very wide banner
-// (1600x600, ratio 2.67). The old mobile crop (1350x1170, ratio ~1.15) was
-// close to square, which forces Cloudinary to cut away more than half the
-// original width — so anything near the left/right edges of the source
-// photo (badges, taglines, logos) gets cropped clean off. That's what
-// read as "zoomed in": g_auto keeps the detected main subject and
-// discards everything outside the much-narrower mobile frame.
-//
-// Using a 16:9 mobile crop instead (much closer to the desktop's own
-// shape) keeps far more of the original photo's width in frame, so edge
-// content survives, while still being noticeably taller/more portrait
-// than the desktop banner.
+// heroBanners.image URLs already have one combined transform segment:
+//   .../upload/f_auto,q_auto,w_1600,h_600,c_fill,g_auto/<version?>/<file>
+// For desktop we just bump the resolution inside that same segment (in
+// place, not a new chained segment — chaining a second crop after the
+// first would re-crop and undo the resolution bump).
 const withHiResCrop = (url, width, height) =>
   url
     .replace(/w_\d+,h_\d+/, `w_${width},h_${height}`)
     .replace("g_auto", "g_auto,dpr_auto");
 
-const toMobileSrc = (url) => withHiResCrop(url, 1600, 900);
-
 const toDesktopSrc = (url) => withHiResCrop(url, 2400, 900);
+
+// Mobile now uses a SEPARATE image per banner (heroBanners[i].mobileImage)
+// instead of auto-cropping the wide desktop photo. Auto-cropping a very
+// wide banner (2.67:1) down into a portrait/near-square mobile shape
+// always risks cutting off edge content — badges, logos, taglines — no
+// matter how the crop ratio is tuned, because g_auto can only guess at
+// what matters. A purpose-picked mobile image (or a manually-cropped
+// version uploaded to Cloudinary with the important content centered)
+// sidesteps that guesswork entirely. If a banner doesn't have a
+// mobileImage yet, we fall back to a smart-cropped version of the main
+// image so nothing breaks while mobile assets are still being added.
+const toMobileSrc = (banner) =>
+  banner.mobileImage
+    ? withHiResCrop(banner.mobileImage, 1200, 1500)
+    : withHiResCrop(banner.image, 1600, 900);
 
 export default function HeroSection() {
   const [query, setQuery] = useState("");
 
   return (
-    // Mobile: aspect-video (16:9) matches the new, less-aggressive mobile
-    // crop exactly — tall enough to feel like a hero, wide enough that
-    // edge content (badges, taglines) from the source banner isn't lost.
+    // Mobile: aspect-[4/5] matches the dedicated mobileImage crop (1200x1500),
+    // capped at 560px tall so it doesn't get excessively long on tall phones.
     // Desktop (sm+): aspect-[8/3] matches the desktop crop's own ratio
-    // exactly (2400/900 = 1600/600 = 8/3 — same shape, just higher-res).
-    // Because each breakpoint's container ratio equals its own image's
-    // ratio, bg-cover never crops/zooms beyond what Cloudinary already did.
-    <section className="relative w-full aspect-video max-h-[480px] sm:aspect-[8/3] overflow-hidden bg-charcoal">
+    // exactly (2400/900 = 1600/600 = 8/3). No max-height cap here — capping
+    // height while width is unconstrained (full-bleed) would make the box's
+    // *effective* ratio flatter than 8/3 on wide screens, forcing bg-cover
+    // to crop the top and bottom of the image to fill that extra width —
+    // which is exactly what was cutting off the logo and bottom tagline on
+    // large monitors. Letting aspect-ratio fully control height keeps the
+    // box's ratio identical to the image's ratio at every screen width, so
+    // there's never any extra vertical cropping.
+    <section className="relative w-full aspect-[4/5] max-h-[560px] sm:aspect-[8/3] sm:max-h-none overflow-hidden bg-charcoal">
       <div className="absolute inset-0 z-0">
         {heroBanners.map((banner, i) => (
           <div key={banner.id}>
@@ -45,7 +54,7 @@ export default function HeroSection() {
             <div
               className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-0 animate-hero-fade sm:hidden"
               style={{
-                backgroundImage: `url(${toMobileSrc(banner.image)})`,
+                backgroundImage: `url(${toMobileSrc(banner)})`,
                 animationDelay: `${i * 3}s`,
               }}
             />
