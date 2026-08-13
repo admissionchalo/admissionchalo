@@ -99,9 +99,9 @@ export default function CollegeVideos() {
 
         {/* Sidebar list */}
         <div className="overflow-hidden rounded-xl border border-charcoal/10 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.04)] sm:rounded-2xl">
-          <div className="flex items-center gap-2 border-b border-charcoal/10 px-4 py-3 sm:px-5 sm:py-3.5">
+          <div className="flex items-center gap-2 bg-charcoal px-4 py-3 sm:px-5 sm:py-3.5">
             <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
-            <p className="font-heading text-[13px] font-bold text-charcoal sm:text-sm">
+            <p className="font-heading text-[13px] font-bold text-white sm:text-sm">
               Watch next
             </p>
           </div>
