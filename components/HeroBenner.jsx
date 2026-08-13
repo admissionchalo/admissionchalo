@@ -17,19 +17,15 @@ const withHiResCrop = (url, width, height) =>
 const toDesktopSrc = (url) => withHiResCrop(url, 2400, 900);
 
 // Mobile now uses a SEPARATE image per banner (heroBanners[i].mobileImage)
-// instead of auto-cropping the wide desktop photo. Auto-cropping a very
-// wide banner (2.67:1) down into a portrait/near-square mobile shape
-// always risks cutting off edge content — badges, logos, taglines — no
-// matter how the crop ratio is tuned, because g_auto can only guess at
-// what matters. A purpose-picked mobile image (or a manually-cropped
-// version uploaded to Cloudinary with the important content centered)
-// sidesteps that guesswork entirely. If a banner doesn't have a
-// mobileImage yet, we fall back to a smart-cropped version of the main
-// image so nothing breaks while mobile assets are still being added.
+// instead of auto-cropping the wide desktop photo, once those dedicated
+// crops are uploaded. Until then (mobileImage is null for every banner
+// right now), we fall back to a smart-crop of the same desktop image — but
+// crucially at the SAME 4:5 ratio as the mobile container below, so there's
+// no ratio mismatch and no extra cropping while this fallback is in use.
 const toMobileSrc = (banner) =>
   banner.mobileImage
     ? withHiResCrop(banner.mobileImage, 1200, 1500)
-    : withHiResCrop(banner.image, 1600, 900);
+    : withHiResCrop(banner.image, 1200, 1500);
 
 export default function HeroSection() {
   const [query, setQuery] = useState("");
