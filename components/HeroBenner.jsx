@@ -4,25 +4,25 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { heroBanners } from "../lib/data";
 
-// heroBanners.image URLs already have one combined transform segment:
-//   .../upload/f_auto,q_auto,w_1600,h_600,c_fill,g_auto/<version?>/<file>
-// Earlier this file tried to fix the zoom by INSERTING a brand new
-// transform segment before that one. That was wrong: Cloudinary chains
-// "/"-separated segments in sequence, so a new "w_2400,h_900,.../" segment
-// would resize up to 2400x900 and then the ORIGINAL "w_1600,h_600,..."
-// segment right after it would immediately crop it back down to 1600x600
-// — silently undoing the resolution fix and re-cropping a second time.
+// The perceived "zoom" wasn't a resize bug — it was the mobile crop shape
+// being TOO different from the desktop one. Desktop is a very wide banner
+// (1600x600, ratio 2.67). The old mobile crop (1350x1170, ratio ~1.15) was
+// close to square, which forces Cloudinary to cut away more than half the
+// original width — so anything near the left/right edges of the source
+// photo (badges, taglines, logos) gets cropped clean off. That's what
+// read as "zoomed in": g_auto keeps the detected main subject and
+// discards everything outside the much-narrower mobile frame.
 //
-// The correct fix is to edit the w_/h_ values that are already inside that
-// one segment, in place, so there's still only ONE crop step — just at a
-// higher resolution — and to add dpr_auto to that same segment for
-// high-DPI/retina screens.
+// Using a 16:9 mobile crop instead (much closer to the desktop's own
+// shape) keeps far more of the original photo's width in frame, so edge
+// content survives, while still being noticeably taller/more portrait
+// than the desktop banner.
 const withHiResCrop = (url, width, height) =>
   url
     .replace(/w_\d+,h_\d+/, `w_${width},h_${height}`)
     .replace("g_auto", "g_auto,dpr_auto");
 
-const toMobileSrc = (url) => withHiResCrop(url, 1350, 1170);
+const toMobileSrc = (url) => withHiResCrop(url, 1600, 900);
 
 const toDesktopSrc = (url) => withHiResCrop(url, 2400, 900);
 
@@ -30,12 +30,14 @@ export default function HeroSection() {
   const [query, setQuery] = useState("");
 
   return (
-    // Mobile: aspect-[900/780] matches the mobile crop's own ratio exactly.
+    // Mobile: aspect-video (16:9) matches the new, less-aggressive mobile
+    // crop exactly — tall enough to feel like a hero, wide enough that
+    // edge content (badges, taglines) from the source banner isn't lost.
     // Desktop (sm+): aspect-[8/3] matches the desktop crop's own ratio
     // exactly (2400/900 = 1600/600 = 8/3 — same shape, just higher-res).
     // Because each breakpoint's container ratio equals its own image's
     // ratio, bg-cover never crops/zooms beyond what Cloudinary already did.
-    <section className="relative w-full aspect-[900/780] max-h-[480px] sm:aspect-[8/3] overflow-hidden bg-charcoal">
+    <section className="relative w-full aspect-video max-h-[480px] sm:aspect-[8/3] overflow-hidden bg-charcoal">
       <div className="absolute inset-0 z-0">
         {heroBanners.map((banner, i) => (
           <div key={banner.id}>
