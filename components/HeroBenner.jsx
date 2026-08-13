@@ -5,20 +5,24 @@ import { Search } from "lucide-react";
 import { heroBanners } from "../lib/data";
 
 // Every heroBanners.image URL already contains "w_1600,h_600,c_fill,g_auto"
-// (see lib/data.js). For mobile we swap that for a taller, portrait-ish
-// crop — same g_auto smart-cropping, different shape — so the section's
-// own aspect-ratio can exactly match what's actually rendered and bg-cover
-// never has to scale the image up to cover extra height. That's what
-// removes the zoom for good, instead of just shrinking padding/text.
-const toMobileSrc = (url) => url.replace("w_1600,h_600", "w_900,h_780");
+// (see lib/data.js). Two separate problems were causing the "zoomed"
+// look on some screens, and both are fixed here:
+
+
+const toMobileSrc = (url) =>
+  url.replace("w_1600,h_600,c_fill,g_auto", "w_1350,h_1170,c_fill,g_auto,dpr_auto");
+
+const toDesktopSrc = (url) =>
+  url.replace("w_1600,h_600,c_fill,g_auto", "w_2400,h_900,c_fill,g_auto,dpr_auto");
 
 export default function HeroSection() {
   const [query, setQuery] = useState("");
 
   return (
-    // Mobile: aspect-[9/10] matches the new 900x1000 mobile crop exactly.
-    // Desktop (sm+): aspect-[8/3] matches the original 1600x600 crop.
-    // Because each breakpoint's container ratio now equals its own image's
+    // Mobile: aspect-[900/780] matches the mobile crop's own ratio exactly.
+    // Desktop (sm+): aspect-[8/3] matches the desktop crop's own ratio
+    // exactly (2400/900 = 1600/600 = 8/3 — same shape, just higher-res).
+    // Because each breakpoint's container ratio equals its own image's
     // ratio, bg-cover never crops/zooms beyond what Cloudinary already did.
     <section className="relative w-full aspect-[900/780] max-h-[480px] sm:aspect-[8/3] overflow-hidden bg-charcoal">
       <div className="absolute inset-0 z-0">
@@ -36,7 +40,7 @@ export default function HeroSection() {
             <div
               className="absolute inset-0 hidden bg-cover bg-center bg-no-repeat opacity-0 animate-hero-fade sm:block"
               style={{
-                backgroundImage: `url(${banner.image})`,
+                backgroundImage: `url(${toDesktopSrc(banner.image)})`,
                 animationDelay: `${i * 3}s`,
               }}
             />
