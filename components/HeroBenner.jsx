@@ -20,18 +20,18 @@ const toDesktopSrc = (url) => withHiResCrop(url, 2400, 900);
 // instead of auto-cropping the wide desktop photo, once those dedicated
 // crops are uploaded. Until then (mobileImage is null for every banner
 // right now), we fall back to a smart-crop of the same desktop image — but
-// crucially at the SAME 4:5 ratio as the mobile container below, so there's
+// crucially at the SAME 1:1 ratio as the mobile container below, so there's
 // no ratio mismatch and no extra cropping while this fallback is in use.
 const toMobileSrc = (banner) =>
   banner.mobileImage
-    ? withHiResCrop(banner.mobileImage, 1200, 1500)
-    : withHiResCrop(banner.image, 1200, 1500);
+    ? withHiResCrop(banner.mobileImage, 1200, 1200)
+    : withHiResCrop(banner.image, 1200, 1200);
 
 export default function HeroSection() {
   const [query, setQuery] = useState("");
 
   return (
-    // Mobile: aspect-[4/5] matches the dedicated mobileImage crop (1200x1500),
+    // Mobile: aspect-square (1:1) matches the mobile crop (1200x1200),
     // capped at 560px tall so it doesn't get excessively long on tall phones.
     // Desktop (sm+): aspect-[8/3] matches the desktop crop's own ratio
     // exactly (2400/900 = 1600/600 = 8/3). No max-height cap here — capping
@@ -42,7 +42,7 @@ export default function HeroSection() {
     // large monitors. Letting aspect-ratio fully control height keeps the
     // box's ratio identical to the image's ratio at every screen width, so
     // there's never any extra vertical cropping.
-    <section className="relative w-full aspect-[4/5] max-h-[560px] sm:aspect-[8/3] sm:max-h-none overflow-hidden bg-charcoal">
+    <section className="relative w-full aspect-square max-h-[560px] sm:aspect-[8/3] sm:max-h-none overflow-hidden bg-charcoal">
       <div className="absolute inset-0 z-0">
         {heroBanners.map((banner, i) => (
           <div key={banner.id}>
