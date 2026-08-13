@@ -4,16 +4,27 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { heroBanners } from "../lib/data";
 
-// Every heroBanners.image URL already contains "w_1600,h_600,c_fill,g_auto"
-// (see lib/data.js). Two separate problems were causing the "zoomed"
-// look on some screens, and both are fixed here:
+// heroBanners.image URLs already have one combined transform segment:
+//   .../upload/f_auto,q_auto,w_1600,h_600,c_fill,g_auto/<version?>/<file>
+// Earlier this file tried to fix the zoom by INSERTING a brand new
+// transform segment before that one. That was wrong: Cloudinary chains
+// "/"-separated segments in sequence, so a new "w_2400,h_900,.../" segment
+// would resize up to 2400x900 and then the ORIGINAL "w_1600,h_600,..."
+// segment right after it would immediately crop it back down to 1600x600
+// — silently undoing the resolution fix and re-cropping a second time.
+//
+// The correct fix is to edit the w_/h_ values that are already inside that
+// one segment, in place, so there's still only ONE crop step — just at a
+// higher resolution — and to add dpr_auto to that same segment for
+// high-DPI/retina screens.
+const withHiResCrop = (url, width, height) =>
+  url
+    .replace(/w_\d+,h_\d+/, `w_${width},h_${height}`)
+    .replace("g_auto", "g_auto,dpr_auto");
 
+const toMobileSrc = (url) => withHiResCrop(url, 1350, 1170);
 
-const toMobileSrc = (url) =>
-  url.replace("w_1600,h_600,c_fill,g_auto", "w_1350,h_1170,c_fill,g_auto,dpr_auto");
-
-const toDesktopSrc = (url) =>
-  url.replace("w_1600,h_600,c_fill,g_auto", "w_2400,h_900,c_fill,g_auto,dpr_auto");
+const toDesktopSrc = (url) => withHiResCrop(url, 2400, 900);
 
 export default function HeroSection() {
   const [query, setQuery] = useState("");
