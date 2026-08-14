@@ -282,111 +282,146 @@ export default function CollegePage({ data }) {
     }
   };
 
+  const heroDesktop = data.heroImage?.desktop;
+  const heroMobile = data.heroImage?.mobile || data.heroImage?.desktop;
+
   return (
     <div style={{ background: "#f3f4f6", minHeight: "100vh", fontFamily: "'Segoe UI',-apple-system,sans-serif", color: "#111827" }}>
+
+      {/* responsive hero background layers (inline styles can't do media queries) */}
+      <style>{`
+        .college-hero-bg { position: absolute; inset: 0; background-size: cover; background-position: center; z-index: 0; }
+        .college-hero-bg--mobile { display: block; }
+        .college-hero-bg--desktop { display: none; }
+        @media (min-width: 768px) {
+          .college-hero-bg--mobile { display: none; }
+          .college-hero-bg--desktop { display: block; }
+        }
+      `}</style>
 
       {/* ── STICKY HEADER ── */}
       <div ref={headerRef} style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000, background: "#fff", boxShadow: scrolled ? "0 2px 12px rgba(0,0,0,0.1)" : "0 1px 4px rgba(0,0,0,0.06)" }}>
 
-        <div style={{ padding: isMobile ? "10px 14px" : "12px 24px", borderBottom: "1px solid #e5e7eb" }}>
+        <div style={{ position: "relative", overflow: "hidden" }}>
+          {/* background image (device-specific) */}
+          {heroDesktop && <div className="college-hero-bg college-hero-bg--desktop" style={{ backgroundImage: `url(${heroDesktop})` }} />}
+          {heroMobile && <div className="college-hero-bg college-hero-bg--mobile" style={{ backgroundImage: `url(${heroMobile})` }} />}
+          {/* dark overlay for text readability */}
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(10,10,15,0.72) 0%, rgba(10,10,15,0.82) 100%)", zIndex: 1 }} />
 
-          {(data.nirf || data.naac) && (
-            <div style={{ display: "flex", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
-              {data.nirf && (
-                <span style={{ fontSize: 11, fontWeight: 700, color: "#16a34a", background: "#dcfce7", padding: "2px 10px", borderRadius: 4, border: "1px solid #86efac" }}>
-                  NIRF {data.nirf}
-                </span>
-              )}
-              {data.naac && (
-                <span style={{ fontSize: 11, fontWeight: 700, color: "#16a34a", background: "#dcfce7", padding: "2px 10px", borderRadius: 4, border: "1px solid #86efac" }}>
-                  NAAC GRADING {data.naac}
-                </span>
-              )}
-            </div>
-          )}
+          <div style={{ position: "relative", zIndex: 2, padding: isMobile ? "12px 14px 14px" : "16px 24px 18px" }}>
 
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
+            {(data.nirf || data.naac) && (
+              <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+                {data.nirf && (
+                  <span style={{ fontSize: 11, fontWeight: 700, color: "#16a34a", background: "#dcfce7", padding: "2px 10px", borderRadius: 4, border: "1px solid #86efac" }}>
+                    NIRF {data.nirf}
+                  </span>
+                )}
+                {data.naac && (
+                  <span style={{ fontSize: 11, fontWeight: 700, color: "#16a34a", background: "#dcfce7", padding: "2px 10px", borderRadius: 4, border: "1px solid #86efac" }}>
+                    NAAC GRADING {data.naac}
+                  </span>
+                )}
+              </div>
+            )}
 
-            <div style={{ width: isMobile ? 48 : 64, height: isMobile ? 48 : 64, borderRadius: 8, border: "1px solid #e5e7eb", background: "#f8fafc", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
-              {data.logo ? (
-                <img src={data.logo} alt={data.shortName} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
-              ) : (
-                <div style={{ width: "100%", height: "100%", background: P, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ color: "#fff", fontSize: isMobile ? 14 : 18, fontWeight: 900 }}>{data.code}</span>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
+
+              {/* ── Logo card ── */}
+              <div style={{
+                width: isMobile ? 60 : 80,
+                height: isMobile ? 60 : 80,
+                borderRadius: 14,
+                background: "#fff",
+                padding: 6,
+                boxShadow: "0 6px 20px rgba(0,0,0,0.28), 0 0 0 1px rgba(255,255,255,0.6)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+                overflow: "hidden",
+              }}>
+                {data.logo ? (
+                  <img src={data.logo} alt={data.shortName} style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: 8 }} />
+                ) : (
+                  <div style={{ width: "100%", height: "100%", borderRadius: 8, background: `linear-gradient(135deg, ${P}, ${O})`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <span style={{ color: "#fff", fontSize: isMobile ? 16 : 20, fontWeight: 900 }}>{data.code}</span>
+                  </div>
+                )}
+              </div>
+
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <h1 style={{ fontSize: isMobile ? 15 : 19, fontWeight: 800, color: "#fff", margin: "2px 0 8px", lineHeight: 1.3, textShadow: "0 1px 6px rgba(0,0,0,0.4)" }}>
+                  {TAB_TITLES[activeTab]?.(data.name) || data.name}
+                </h1>
+
+                <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", marginBottom: 9 }}>
+                  <span style={{ fontSize: 12, color: "#e5e7eb", display: "flex", alignItems: "center", gap: 4 }}>
+                    <MapPin size={13} /> {data.location}
+                  </span>
+                  <span style={{ fontSize: 12, color: "#e5e7eb", display: "flex", alignItems: "center", gap: 4 }}>
+                    <span style={{ color: "#E8A317", display: "flex", gap: 1 }}>
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star key={i} size={12} fill={i < Math.round(data.rating || 0) ? "#E8A317" : "none"} strokeWidth={1.5} />
+                      ))}
+                    </span>
+                    <strong style={{ color: "#fff" }}>{data.rating}</strong>/5 ({data.totalReviews}+ Reviews)
+                  </span>
+                </div>
+
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  {data.type && (
+                    <span style={{ fontSize: 11, color: "#fff", background: "rgba(255,255,255,0.14)", backdropFilter: "blur(4px)", padding: "3px 10px", borderRadius: 4, border: "1px solid rgba(255,255,255,0.25)" }}>
+                      Ownership: {data.type}
+                    </span>
+                  )}
+                  {data.affiliation && (
+                    <span style={{ fontSize: 11, color: "#fff", background: "rgba(255,255,255,0.14)", backdropFilter: "blur(4px)", padding: "3px 10px", borderRadius: 4, border: "1px solid rgba(255,255,255,0.25)" }}>
+                      {data.affiliation?.split(" ").slice(0, 4).join(" ")}
+                    </span>
+                  )}
+                  {data.approval && (
+                    <span style={{ fontSize: 11, color: "#fff", background: "rgba(255,255,255,0.14)", backdropFilter: "blur(4px)", padding: "3px 10px", borderRadius: 4, border: "1px solid rgba(255,255,255,0.25)" }}>
+                      {data.approval}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {!isMobile && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, flexShrink: 0 }}>
+                  <button onClick={() => setShowModal(true)}
+                    style={{ background: O, color: "#fff", border: "none", borderRadius: 6, padding: "9px 20px", fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, minWidth: 120, justifyContent: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.25)" }}>
+                    <HelpCircle size={15} /> Enquire
+                  </button>
+                  <button style={{ background: "rgba(255,255,255,0.95)", color: O, border: "1.5px solid transparent", borderRadius: 6, padding: "8px 20px", fontWeight: 600, fontSize: 13, cursor: "pointer", minWidth: 120, display: "flex", alignItems: "center", gap: 6, justifyContent: "center" }}>
+                    <Download size={15} /> Brochure
+                  </button>
+                  <button onClick={() => setShowCompare(true)}
+                    style={{ background: "rgba(255,255,255,0.12)", color: "#fff", border: "1.5px solid rgba(255,255,255,0.35)", borderRadius: 6, padding: "8px 20px", fontWeight: 600, fontSize: 13, cursor: "pointer", minWidth: 120, display: "flex", alignItems: "center", gap: 6, justifyContent: "center", backdropFilter: "blur(4px)" }}>
+                    <ArrowUpDown size={15} /> Compare
+                  </button>
                 </div>
               )}
             </div>
 
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <h1 style={{ fontSize: isMobile ? 14 : 18, fontWeight: 800, color: "#111827", margin: "0 0 6px", lineHeight: 1.3 }}>
-                {TAB_TITLES[activeTab]?.(data.name) || data.name}
-              </h1>
-
-              <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", marginBottom: 8 }}>
-                <span style={{ fontSize: 12, color: "#0A0A0A", display: "flex", alignItems: "center", gap: 4 }}>
-                  <MapPin size={13} /> {data.location}
-                </span>
-                <span style={{ fontSize: 12, color: "#374151", display: "flex", alignItems: "center", gap: 4 }}>
-                  <span style={{ color: "#E8A317", display: "flex", gap: 1 }}>
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} size={12} fill={i < Math.round(data.rating || 0) ? "#E8A317" : "none"} strokeWidth={1.5} />
-                    ))}
-                  </span>
-                  <strong>{data.rating}</strong>/5 ({data.totalReviews}+ Reviews)
-                </span>
-              </div>
-
-              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                {data.type && (
-                  <span style={{ fontSize: 11, color: "#374151", background: "#f3f4f6", padding: "3px 10px", borderRadius: 4, border: "1px solid #e5e7eb" }}>
-                    Ownership: {data.type}
-                  </span>
-                )}
-                {data.affiliation && (
-                  <span style={{ fontSize: 11, color: "#374151", background: "#f3f4f6", padding: "3px 10px", borderRadius: 4, border: "1px solid #e5e7eb" }}>
-                    {data.affiliation?.split(" ").slice(0, 4).join(" ")}
-                  </span>
-                )}
-                {data.approval && (
-                  <span style={{ fontSize: 11, color: "#374151", background: "#f3f4f6", padding: "3px 10px", borderRadius: 4, border: "1px solid #e5e7eb" }}>
-                    {data.approval}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {!isMobile && (
-              <div style={{ display: "flex", flexDirection: "column", gap: 8, flexShrink: 0 }}>
+            {isMobile && (
+              <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
                 <button onClick={() => setShowModal(true)}
-                  style={{ background: O, color: "#fff", border: "none", borderRadius: 6, padding: "9px 20px", fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, minWidth: 120, justifyContent: "center" }}>
-                  <HelpCircle size={15} /> Enquire
+                  style={{ flex: 1, background: O, color: "#fff", border: "none", borderRadius: 6, padding: "8px", fontWeight: 700, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 5, justifyContent: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.25)" }}>
+                  <HelpCircle size={13} /> Enquire
                 </button>
-                <button style={{ background: "#fff", color: O, border: `1.5px solid ${O}`, borderRadius: 6, padding: "8px 20px", fontWeight: 600, fontSize: 13, cursor: "pointer", minWidth: 120, display: "flex", alignItems: "center", gap: 6, justifyContent: "center" }}>
-                  <Download size={15} /> Brochure
+                <button style={{ flex: 1, background: "rgba(255,255,255,0.95)", color: O, border: "1.5px solid transparent", borderRadius: 6, padding: "7px", fontWeight: 600, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 5, justifyContent: "center" }}>
+                  <Download size={13} /> Brochure
                 </button>
                 <button onClick={() => setShowCompare(true)}
-                  style={{ background: "#fff", color: "#374151", border: "1.5px solid #e5e7eb", borderRadius: 6, padding: "8px 20px", fontWeight: 600, fontSize: 13, cursor: "pointer", minWidth: 120, display: "flex", alignItems: "center", gap: 6, justifyContent: "center" }}>
-                  <ArrowUpDown size={15} /> Compare
+                  style={{ flex: 1, background: "rgba(255,255,255,0.12)", color: "#fff", border: "1.5px solid rgba(255,255,255,0.35)", borderRadius: 6, padding: "7px", fontWeight: 600, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 5, justifyContent: "center", backdropFilter: "blur(4px)" }}>
+                  <ArrowUpDown size={13} /> Compare
                 </button>
               </div>
             )}
           </div>
-
-          {isMobile && (
-            <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-              <button onClick={() => setShowModal(true)}
-                style={{ flex: 1, background: O, color: "#fff", border: "none", borderRadius: 6, padding: "8px", fontWeight: 700, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 5, justifyContent: "center" }}>
-                <HelpCircle size={13} /> Enquire
-              </button>
-              <button style={{ flex: 1, background: "#fff", color: O, border: `1.5px solid ${O}`, borderRadius: 6, padding: "7px", fontWeight: 600, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 5, justifyContent: "center" }}>
-                <Download size={13} /> Brochure
-              </button>
-              <button onClick={() => setShowCompare(true)}
-                style={{ flex: 1, background: "#fff", color: "#374151", border: "1.5px solid #e5e7eb", borderRadius: 6, padding: "7px", fontWeight: 600, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 5, justifyContent: "center" }}>
-                <ArrowUpDown size={13} /> Compare
-              </button>
-            </div>
-          )}
         </div>
 
         <div style={{ display: "flex", overflowX: "auto", background: "#fff", borderBottom: "2px solid #e5e7eb", padding: "0 12px", scrollbarWidth: "none" }}>
