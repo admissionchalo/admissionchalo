@@ -2,8 +2,10 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { HelpCircle, Download, ArrowUpDown, MapPin, Star, Clock, X, ChevronDown } from "lucide-react";
+import { HelpCircle, Download, ArrowUpDown, MapPin, Star, Clock, X, ChevronDown, Newspaper, Eye, ArrowRight } from "lucide-react";
 import colleges from "../../lib/colleges";
+import TopBar from "../../components/TopBar";
+import Navbar from "../../components/Navbar";
 import OverviewSection   from "./sections/OverviewSection";
 import CoursesSection    from "./sections/CoursesSection";
 import FeesSection       from "./sections/FeesSection";
@@ -218,8 +220,12 @@ export default function CollegePage({ data }) {
   const [showCompare, setShowCompare] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const headerRef = useRef(null);
-  const [headerHeight, setHeaderHeight] = useState(220);
+  const [newsTab, setNewsTab] = useState("latest");
+  const [openNewsIdx, setOpenNewsIdx] = useState(-1);
+
+  // Only the TopBar stays fixed at the very top
+  const topBarRef = useRef(null);
+  const [topBarHeight, setTopBarHeight] = useState(0);
 
   const slugFromUrl = searchParams.get("tab") || "overview";
   const activeTab = SLUG_TO_TAB[slugFromUrl] || "Overview";
@@ -237,21 +243,20 @@ export default function CollegePage({ data }) {
   useEffect(() => {
     setIsMobile(window.innerWidth < 768);
 
-    const measureHeader = () => {
-      if (headerRef.current) {
-        setHeaderHeight(headerRef.current.offsetHeight);
+    const measure = () => {
+      if (topBarRef.current) {
+        setTopBarHeight(topBarRef.current.offsetHeight);
       }
     };
 
     const onScroll = () => setScrolled(window.scrollY > 5);
     const onResize = () => {
       setIsMobile(window.innerWidth < 768);
-      measureHeader();
+      measure();
     };
 
-    measureHeader();
-    // Re-measure shortly after mount in case fonts/badges shift layout
-    const t = setTimeout(measureHeader, 150);
+    measure();
+    const t = setTimeout(measure, 150);
 
     window.addEventListener("scroll", onScroll);
     window.addEventListener("resize", onResize);
@@ -286,9 +291,8 @@ export default function CollegePage({ data }) {
   const heroMobile = data.heroImage?.mobile || data.heroImage?.desktop;
 
   return (
-    <div style={{ background: "#f3f4f6", minHeight: "100vh", fontFamily: "'Segoe UI',-apple-system,sans-serif", color: "#111827" }}>
+    <div style={{ background: "#f3f4f6", minHeight: "100vh", fontFamily: "Arial, Helvetica, sans-serif", color: "#111827" }}>
 
-      {/* responsive hero background layers (inline styles can't do media queries) */}
       <style>{`
         .college-hero-bg { position: absolute; inset: 0; background-size: cover; background-position: center; z-index: 0; }
         .college-hero-bg--mobile { display: block; }
@@ -299,148 +303,170 @@ export default function CollegePage({ data }) {
         }
       `}</style>
 
-      {/* ── STICKY HEADER ── */}
-      <div ref={headerRef} style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000, background: "#fff", boxShadow: scrolled ? "0 2px 12px rgba(0,0,0,0.1)" : "0 1px 4px rgba(0,0,0,0.06)" }}>
+      {/* ── FIXED: only the TopBar ── */}
+      <div ref={topBarRef} style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1001, background: "#fff", boxShadow: scrolled ? "0 2px 12px rgba(0,0,0,0.1)" : "0 1px 4px rgba(0,0,0,0.06)" }}>
+        <TopBar />
+      </div>
 
-        <div style={{ position: "relative", overflow: "hidden" }}>
-          {/* background image (device-specific) */}
-          {heroDesktop && <div className="college-hero-bg college-hero-bg--desktop" style={{ backgroundImage: `url(${heroDesktop})` }} />}
-          {heroMobile && <div className="college-hero-bg college-hero-bg--mobile" style={{ backgroundImage: `url(${heroMobile})` }} />}
-          {/* dark overlay for text readability */}
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(10,10,15,0.72) 0%, rgba(10,10,15,0.82) 100%)", zIndex: 1 }} />
+      {/* Spacer so page content starts below the fixed TopBar */}
+      <div style={{ height: topBarHeight }} />
 
-          <div style={{ position: "relative", zIndex: 2, padding: isMobile ? "12px 14px 14px" : "16px 24px 18px" }}>
+      {/* ── Navbar — normal flow, scrolls away with the page ── */}
+      <Navbar />
 
-            {(data.nirf || data.naac) && (
-              <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
-                {data.nirf && (
-                  <span style={{ fontSize: 11, fontWeight: 700, color: "#16a34a", background: "#dcfce7", padding: "2px 10px", borderRadius: 4, border: "1px solid #86efac" }}>
-                    NIRF {data.nirf}
-                  </span>
-                )}
-                {data.naac && (
-                  <span style={{ fontSize: 11, fontWeight: 700, color: "#16a34a", background: "#dcfce7", padding: "2px 10px", borderRadius: 4, border: "1px solid #86efac" }}>
-                    NAAC GRADING {data.naac}
-                  </span>
-                )}
-              </div>
-            )}
+      {/* ── HERO CARD — scrolls normally with the page ── */}
+      <div style={{ position: "relative", overflow: "hidden" }}>
+        {heroDesktop && <div className="college-hero-bg college-hero-bg--desktop" style={{ backgroundImage: `url(${heroDesktop})` }} />}
+        {heroMobile && <div className="college-hero-bg college-hero-bg--mobile" style={{ backgroundImage: `url(${heroMobile})` }} />}
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(10,10,15,0.72) 0%, rgba(10,10,15,0.82) 100%)", zIndex: 1 }} />
 
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
+        <div style={{ position: "relative", zIndex: 2, padding: isMobile ? "10px 14px 12px" : "12px 24px 14px" }}>
 
-              {/* ── Logo card ── */}
-              <div style={{
-                width: isMobile ? 60 : 80,
-                height: isMobile ? 60 : 80,
-                borderRadius: 14,
-                background: "#fff",
-                padding: 6,
-                boxShadow: "0 6px 20px rgba(0,0,0,0.28), 0 0 0 1px rgba(255,255,255,0.6)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-                overflow: "hidden",
-              }}>
-                {data.logo ? (
-                  <img src={data.logo} alt={data.shortName} style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: 8 }} />
-                ) : (
-                  <div style={{ width: "100%", height: "100%", borderRadius: 8, background: `linear-gradient(135deg, ${P}, ${O})`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <span style={{ color: "#fff", fontSize: isMobile ? 16 : 20, fontWeight: 900 }}>{data.code}</span>
-                  </div>
-                )}
-              </div>
+          {(data.nirf || data.naac) && (
+            <div style={{ display: "flex", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
+              {data.nirf && (
+                <span style={{ fontSize: 11, fontWeight: 700, color: "#16a34a", background: "#dcfce7", padding: "2px 10px", borderRadius: 4, border: "1px solid #86efac" }}>
+                  NIRF {data.nirf}
+                </span>
+              )}
+              {data.naac && (
+                <span style={{ fontSize: 11, fontWeight: 700, color: "#16a34a", background: "#dcfce7", padding: "2px 10px", borderRadius: 4, border: "1px solid #86efac" }}>
+                  NAAC GRADING {data.naac}
+                </span>
+              )}
+            </div>
+          )}
 
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <h1 style={{ fontSize: isMobile ? 15 : 19, fontWeight: 800, color: "#fff", margin: "2px 0 8px", lineHeight: 1.3, textShadow: "0 1px 6px rgba(0,0,0,0.4)" }}>
-                  {TAB_TITLES[activeTab]?.(data.name) || data.name}
-                </h1>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
 
-                <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", marginBottom: 9 }}>
-                  <span style={{ fontSize: 12, color: "#e5e7eb", display: "flex", alignItems: "center", gap: 4 }}>
-                    <MapPin size={13} /> {data.location}
-                  </span>
-                  <span style={{ fontSize: 12, color: "#e5e7eb", display: "flex", alignItems: "center", gap: 4 }}>
-                    <span style={{ color: "#E8A317", display: "flex", gap: 1 }}>
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star key={i} size={12} fill={i < Math.round(data.rating || 0) ? "#E8A317" : "none"} strokeWidth={1.5} />
-                      ))}
-                    </span>
-                    <strong style={{ color: "#fff" }}>{data.rating}</strong>/5 ({data.totalReviews}+ Reviews)
-                  </span>
-                </div>
-
-                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                  {data.type && (
-                    <span style={{ fontSize: 11, color: "#fff", background: "rgba(255,255,255,0.14)", backdropFilter: "blur(4px)", padding: "3px 10px", borderRadius: 4, border: "1px solid rgba(255,255,255,0.25)" }}>
-                      Ownership: {data.type}
-                    </span>
-                  )}
-                  {data.affiliation && (
-                    <span style={{ fontSize: 11, color: "#fff", background: "rgba(255,255,255,0.14)", backdropFilter: "blur(4px)", padding: "3px 10px", borderRadius: 4, border: "1px solid rgba(255,255,255,0.25)" }}>
-                      {data.affiliation?.split(" ").slice(0, 4).join(" ")}
-                    </span>
-                  )}
-                  {data.approval && (
-                    <span style={{ fontSize: 11, color: "#fff", background: "rgba(255,255,255,0.14)", backdropFilter: "blur(4px)", padding: "3px 10px", borderRadius: 4, border: "1px solid rgba(255,255,255,0.25)" }}>
-                      {data.approval}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {!isMobile && (
-                <div style={{ display: "flex", flexDirection: "column", gap: 8, flexShrink: 0 }}>
-                  <button onClick={() => setShowModal(true)}
-                    style={{ background: O, color: "#fff", border: "none", borderRadius: 6, padding: "9px 20px", fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, minWidth: 120, justifyContent: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.25)" }}>
-                    <HelpCircle size={15} /> Enquire
-                  </button>
-                  <button style={{ background: "rgba(255,255,255,0.95)", color: O, border: "1.5px solid transparent", borderRadius: 6, padding: "8px 20px", fontWeight: 600, fontSize: 13, cursor: "pointer", minWidth: 120, display: "flex", alignItems: "center", gap: 6, justifyContent: "center" }}>
-                    <Download size={15} /> Brochure
-                  </button>
-                  <button onClick={() => setShowCompare(true)}
-                    style={{ background: "rgba(255,255,255,0.12)", color: "#fff", border: "1.5px solid rgba(255,255,255,0.35)", borderRadius: 6, padding: "8px 20px", fontWeight: 600, fontSize: 13, cursor: "pointer", minWidth: 120, display: "flex", alignItems: "center", gap: 6, justifyContent: "center", backdropFilter: "blur(4px)" }}>
-                    <ArrowUpDown size={15} /> Compare
-                  </button>
+            <div style={{
+              width: isMobile ? 42 : 52,
+              height: isMobile ? 42 : 52,
+              borderRadius: 12,
+              background: "#fff",
+              padding: 5,
+              boxShadow: "0 6px 20px rgba(0,0,0,0.28), 0 0 0 1px rgba(255,255,255,0.6)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+              overflow: "hidden",
+            }}>
+              {data.logo ? (
+                <img src={data.logo} alt={data.shortName} style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: 8 }} />
+              ) : (
+                <div style={{ width: "100%", height: "100%", borderRadius: 8, background: `linear-gradient(135deg, ${P}, ${O})`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <span style={{ color: "#fff", fontSize: isMobile ? 13 : 16, fontWeight: 900 }}>{data.code}</span>
                 </div>
               )}
             </div>
 
-            {isMobile && (
-              <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h1 style={{ fontSize: isMobile ? 14 : 17, fontWeight: 800, color: "#fff", margin: "0 0 5px", lineHeight: 1.25, textShadow: "0 1px 6px rgba(0,0,0,0.4)" }}>
+                {TAB_TITLES[activeTab]?.(data.name) || data.name}
+              </h1>
+
+              <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", marginBottom: 6 }}>
+                <span style={{ fontSize: 12, color: "#e5e7eb", display: "flex", alignItems: "center", gap: 4 }}>
+                  <MapPin size={13} /> {data.location}
+                </span>
+                <span style={{ fontSize: 12, color: "#e5e7eb", display: "flex", alignItems: "center", gap: 4 }}>
+                  <span style={{ color: "#E8A317", display: "flex", gap: 1 }}>
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star key={i} size={12} fill={i < Math.round(data.rating || 0) ? "#E8A317" : "none"} strokeWidth={1.5} />
+                    ))}
+                  </span>
+                  <strong style={{ color: "#fff" }}>{data.rating}</strong>/5 ({data.totalReviews}+ Reviews)
+                </span>
+              </div>
+
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                {data.type && (
+                  <span style={{ fontSize: 11, color: "#fff", background: "rgba(255,255,255,0.14)", backdropFilter: "blur(4px)", padding: "3px 10px", borderRadius: 4, border: "1px solid rgba(255,255,255,0.25)" }}>
+                    Ownership: {data.type}
+                  </span>
+                )}
+                {data.affiliation && (
+                  <span style={{ fontSize: 11, color: "#fff", background: "rgba(255,255,255,0.14)", backdropFilter: "blur(4px)", padding: "3px 10px", borderRadius: 4, border: "1px solid rgba(255,255,255,0.25)" }}>
+                    {data.affiliation?.split(" ").slice(0, 4).join(" ")}
+                  </span>
+                )}
+                {data.approval && (
+                  <span style={{ fontSize: 11, color: "#fff", background: "rgba(255,255,255,0.14)", backdropFilter: "blur(4px)", padding: "3px 10px", borderRadius: 4, border: "1px solid rgba(255,255,255,0.25)" }}>
+                    {data.approval}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {!isMobile && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
                 <button onClick={() => setShowModal(true)}
-                  style={{ flex: 1, background: O, color: "#fff", border: "none", borderRadius: 6, padding: "8px", fontWeight: 700, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 5, justifyContent: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.25)" }}>
-                  <HelpCircle size={13} /> Enquire
+                  style={{ background: O, color: "#fff", border: "none", borderRadius: 6, padding: "5px 16px", fontWeight: 700, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, minWidth: 110, justifyContent: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.25)" }}>
+                  <HelpCircle size={14} /> Enquire
                 </button>
-                <button style={{ flex: 1, background: "rgba(255,255,255,0.95)", color: O, border: "1.5px solid transparent", borderRadius: 6, padding: "7px", fontWeight: 600, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 5, justifyContent: "center" }}>
-                  <Download size={13} /> Brochure
+                <button style={{ background: "rgba(255,255,255,0.95)", color: O, border: "1.5px solid transparent", borderRadius: 6, padding: "5px 16px", fontWeight: 600, fontSize: 12, cursor: "pointer", minWidth: 110, display: "flex", alignItems: "center", gap: 6, justifyContent: "center" }}>
+                  <Download size={14} /> Brochure
                 </button>
                 <button onClick={() => setShowCompare(true)}
-                  style={{ flex: 1, background: "rgba(255,255,255,0.12)", color: "#fff", border: "1.5px solid rgba(255,255,255,0.35)", borderRadius: 6, padding: "7px", fontWeight: 600, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 5, justifyContent: "center", backdropFilter: "blur(4px)" }}>
-                  <ArrowUpDown size={13} /> Compare
+                  style={{ background: "rgba(255,255,255,0.12)", color: "#fff", border: "1.5px solid rgba(255,255,255,0.35)", borderRadius: 6, padding: "5px 16px", fontWeight: 600, fontSize: 12, cursor: "pointer", minWidth: 110, display: "flex", alignItems: "center", gap: 6, justifyContent: "center", backdropFilter: "blur(4px)" }}>
+                  <ArrowUpDown size={14} /> Compare
                 </button>
               </div>
             )}
           </div>
-        </div>
 
-        <div style={{ display: "flex", overflowX: "auto", background: "#fff", borderBottom: "2px solid #e5e7eb", padding: "0 12px", scrollbarWidth: "none" }}>
-          {TABS.map(t => (
-            <button key={t} onClick={() => handleTabChange(t)} style={{
-              background: "none", border: "none",
-              padding: isMobile ? "10px 10px" : "11px 16px",
-              fontSize: isMobile ? 12 : 13, cursor: "pointer", whiteSpace: "nowrap",
-              fontWeight: t === activeTab ? 700 : 400,
-              color: t === activeTab ? P : G,
-              borderBottom: t === activeTab ? `2.5px solid ${P}` : "2.5px solid transparent",
-              marginBottom: -2, flexShrink: 0,
-            }}>{t}</button>
-          ))}
+          {isMobile && (
+            <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+              <button onClick={() => setShowModal(true)}
+                style={{ flex: 1, background: O, color: "#fff", border: "none", borderRadius: 6, padding: "7px", fontWeight: 700, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 5, justifyContent: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.25)" }}>
+                <HelpCircle size={13} /> Enquire
+              </button>
+              <button style={{ flex: 1, background: "rgba(255,255,255,0.95)", color: O, border: "1.5px solid transparent", borderRadius: 6, padding: "6px", fontWeight: 600, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 5, justifyContent: "center" }}>
+                <Download size={13} /> Brochure
+              </button>
+              <button onClick={() => setShowCompare(true)}
+                style={{ flex: 1, background: "rgba(255,255,255,0.12)", color: "#fff", border: "1.5px solid rgba(255,255,255,0.35)", borderRadius: 6, padding: "6px", fontWeight: 600, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 5, justifyContent: "center", backdropFilter: "blur(4px)" }}>
+                <ArrowUpDown size={13} /> Compare
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      <div style={{ height: headerHeight }} />
+      {/* ── TABS — sticks right below the fixed TopBar once scrolled ── */}
+      <div style={{ position: "sticky", top: topBarHeight, zIndex: 999, display: "flex", alignItems: "center", overflowX: "auto", background: "linear-gradient(to bottom, #FBCE3E, #F3B916)", boxShadow: scrolled ? "inset 0 1px 0 rgba(255,255,255,0.4), 0 2px 8px rgba(0,0,0,0.15)" : "inset 0 1px 0 rgba(255,255,255,0.4), 0 2px 6px rgba(0,0,0,0.06)", padding: "0 12px", scrollbarWidth: "none" }}>
+        {TABS.map(t => {
+          const isActive = t === activeTab;
+          return (
+            <button key={t} onClick={() => handleTabChange(t)} style={{
+              position: "relative",
+              background: "none",
+              border: "none",
+              padding: isMobile ? "8px 9px" : "9px 15px",
+              fontSize: isMobile ? 12 : 13,
+              cursor: "pointer", whiteSpace: "nowrap",
+              fontWeight: isActive ? 800 : 600,
+              letterSpacing: isActive ? "0.01em" : "normal",
+              color: isActive ? "#0A0A0A" : "rgba(10,10,10,0.65)",
+              flexShrink: 0,
+            }}>
+              {t}
+              <span style={{
+                position: "absolute",
+                left: 6, right: 6, bottom: -1,
+                height: 3,
+                borderRadius: 2,
+                background: isActive ? "#0A0A0A" : "transparent",
+              }} />
+            </button>
+          );
+        })}
+      </div>
 
+
+
+      {/* ── BODY ── */}
       <div style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "12px 12px 50px" : "18px 20px 50px", display: "flex", gap: 20, alignItems: "flex-start" }}>
 
         <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 18 }}>
@@ -451,7 +477,99 @@ export default function CollegePage({ data }) {
         </div>
 
         {!isMobile && (
-          <div style={{ width: 292, flexShrink: 0, display: "flex", flexDirection: "column", gap: 16, position: "sticky", top: 240 }}>
+          <div style={{ width: 292, flexShrink: 0, display: "flex", flexDirection: "column", gap: 16, position: "sticky", top: topBarHeight + 50, marginTop: 20 }}>
+
+            {data.news?.length > 0 && (
+              <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e5e7eb", padding: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                  <div style={{ width: 34, height: 34, borderRadius: 8, background: `${P}14`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <Newspaper size={17} color={P} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, color: G }}>{data.shortName}</div>
+                    <div style={{ fontSize: 14, fontWeight: 800, color: "#111827" }}>News & Updates</div>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
+                  {["latest", "popular"].map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => setNewsTab(t)}
+                      style={{
+                        padding: "5px 14px", borderRadius: 16, border: "none", cursor: "pointer",
+                        fontSize: 11.5, fontWeight: 700, textTransform: "capitalize",
+                        background: newsTab === t ? P : "#f3f4f6",
+                        color: newsTab === t ? "#fff" : G,
+                      }}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  {[...data.news]
+                    .sort((a, b) => {
+                      if (newsTab !== "popular") return 0;
+                      const va = parseFloat(a.views) || 0;
+                      const vb = parseFloat(b.views) || 0;
+                      return vb - va;
+                    })
+                    .slice(0, 4)
+                    .map((n, i) => {
+                      const item = typeof n === "string" ? { title: n } : n;
+                      const open = openNewsIdx === i;
+                      return (
+                        <div key={i} style={{ borderTop: i === 0 ? "none" : "1px solid #f3f4f6" }}>
+                          <button
+                            onClick={() => setOpenNewsIdx(open ? -1 : i)}
+                            style={{ width: "100%", display: "flex", gap: 10, alignItems: "flex-start", padding: "10px 0", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}
+                          >
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <p style={{ margin: "0 0 4px", fontSize: 12.5, fontWeight: 700, color: "#111827", lineHeight: 1.4 }}>
+                                {item.title}
+                              </p>
+                              <div style={{ display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap" }}>
+                                {item.author && <span style={{ fontSize: 10.5, fontWeight: 600, color: "#374151" }}>{item.author}</span>}
+                                {item.author && item.date && <span style={{ color: "#d1d5db", fontSize: 10 }}>·</span>}
+                                {item.date && <span style={{ fontSize: 10.5, color: G }}>{item.date}</span>}
+                              </div>
+                              {item.views && (
+                                <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                                  <Eye size={10} color={G} />
+                                  <span style={{ fontSize: 10, color: G }}>{item.views} views</span>
+                                </div>
+                              )}
+                            </div>
+                            {item.image && (
+                              <img src={item.image} alt={item.title} style={{ width: 52, height: 52, borderRadius: 7, objectFit: "cover", flexShrink: 0, border: "1px solid #e5e7eb" }} />
+                            )}
+                          </button>
+                          {open && item.detail && (
+                            <div style={{ paddingBottom: 10 }}>
+                              <p style={{ margin: 0, fontSize: 11.5, color: "#4b5563", lineHeight: 1.55 }}>{item.detail}</p>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                </div>
+
+                <button
+                  onClick={() => handleTabChange("Overview")}
+                  style={{
+                    width: "100%", marginTop: 10, padding: "8px", borderRadius: 20,
+                    border: `1.5px solid ${P}`, background: "#fff", color: P,
+                    fontSize: 12, fontWeight: 700, cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
+                  }}
+                >
+                  View all News & Updates <ArrowRight size={13} />
+                </button>
+              </div>
+            )}
+
             <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e5e7eb", padding: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
               <div style={{ fontWeight: 700, fontSize: 14, color: "#111827", marginBottom: 14, textAlign: "center" }}>Admissions Open (Nearby Colleges)</div>
               {SIDEBAR_COLLEGES.map((c, i) => (

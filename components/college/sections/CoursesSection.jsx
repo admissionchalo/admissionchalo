@@ -1,71 +1,207 @@
+"use client";
+
+import { useState } from "react";
+import { ChevronUp, ChevronDown, X } from "lucide-react";
+
 const G = "#6b7280";
 
-export default function CoursesSection({ data }) {
+function CourseDetailModal({ course, onClose, P, O }) {
+  return (
+    <div
+      onClick={onClose}
+      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", zIndex: 3000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{ background: "#fff", borderRadius: 14, width: "100%", maxWidth: 520, maxHeight: "85vh", overflowY: "auto" }}
+      >
+        <div style={{ padding: "18px 22px", borderBottom: "1px solid #e5e7eb", display: "flex", justifyContent: "space-between", alignItems: "flex-start", position: "sticky", top: 0, background: "#fff" }}>
+          <div>
+            <h3 style={{ margin: "0 0 4px", fontSize: 17, fontWeight: 700, color: P }}>{course.name}</h3>
+            {course.count > 0 && <p style={{ margin: 0, fontSize: 12.5, color: G }}>{course.count} specialisations available</p>}
+          </div>
+          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: G, display: "flex", padding: 0 }}>
+            <X size={20} />
+          </button>
+        </div>
+
+        <div style={{ padding: 22, display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={{ background: `${O}0F`, border: `1px solid ${O}33`, borderRadius: 10, padding: 14 }}>
+            <div style={{ fontSize: 11, color: G, marginBottom: 3 }}>Total Tuition Fees</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: "#111827" }}>{course.feeRange}</div>
+          </div>
+
+          {(course.pct12 || course.pctGrad) && (
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#111827", marginBottom: 8 }}>Eligibility</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {course.pct12 && (
+                  <div style={{ fontSize: 13, color: "#374151", display: "flex", justifyContent: "space-between", padding: "8px 12px", background: "#f9fafb", borderRadius: 7 }}>
+                    <span>10+2 Minimum</span> <strong>{course.pct12}</strong>
+                  </div>
+                )}
+                {course.pctGrad && (
+                  <div style={{ fontSize: 13, color: "#374151", display: "flex", justifyContent: "space-between", padding: "8px 12px", background: "#f9fafb", borderRadius: 7 }}>
+                    <span>Graduation Minimum</span> <strong>{course.pctGrad}</strong>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {course.allExams?.length > 0 && (
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#111827", marginBottom: 8 }}>Accepted Entrance Exams</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {course.allExams.map((ex, i) => (
+                  <span key={i} style={{ fontSize: 12, fontWeight: 600, color: P, background: `${P}0F`, border: `1px solid ${P}22`, padding: "5px 12px", borderRadius: 20 }}>
+                    {ex}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {course.specializations?.length > 0 && (
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#111827", marginBottom: 8 }}>Specialisations</div>
+              <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 6 }}>
+                {course.specializations.map((s, i) => (
+                  <li key={i} style={{ fontSize: 13, color: "#374151", padding: "8px 12px", background: "#f9fafb", borderRadius: 7, display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ width: 5, height: 5, borderRadius: "50%", background: O, flexShrink: 0 }} />
+                    {s}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <button
+            style={{ width: "100%", background: O, color: "#fff", border: "none", borderRadius: 8, padding: "11px", fontWeight: 700, fontSize: 13.5, cursor: "pointer" }}
+          >
+            Enquire About {course.name}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// `data = {}` below is the actual fix: if the parent ever renders this
+// section before/without a valid college object (e.g. the slug-to-data
+// lookup upstream returned undefined), `data` now safely defaults to an
+// empty object instead of being undefined — so every `data.xxx` read
+// below just resolves to `undefined` (rendering nothing / falling back)
+// instead of throwing "Cannot read properties of undefined".
+export default function CoursesSection({ data = {} }) {
   const P = data.colors?.primary || "#004aad";
   const O = data.colors?.accent || "#f37021";
+
+  const [expanded, setExpanded] = useState(true);
+  const [activeCourse, setActiveCourse] = useState(null);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
 
       {/* Header */}
       <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e5e7eb", padding: 20 }}>
-        <h2 style={{ fontSize: 16, fontWeight: 800, color: "#111827", margin: "0 0 4px" }}>
+        <h2 style={{ fontSize: 17, fontWeight: 700, color: P, margin: "0 0 4px" }}>
           {data.shortName} Courses & Fees 2026
         </h2>
         <p style={{ fontSize: 13, color: G, margin: 0 }}>
-          {data.shortName} offers {data.courses?.length || 0}+ courses across multiple streams.
+          {data.shortName} offers {data.courseGroups?.length || 0}+ programmes across UG, PG and doctoral levels.
         </p>
       </div>
 
-      {/* Courses Table */}
-      {data.courses?.length > 0 && (
+      {/* Grouped Courses & Fees table */}
+      {data.courseGroups?.length > 0 && (
         <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e5e7eb", overflow: "hidden" }}>
-          <div style={{ padding: "14px 20px", borderBottom: "1px solid #f3f4f6", background: "#f8fafc" }}>
-            <h3 style={{ margin: 0, fontSize: 14, fontWeight: 700, color: "#111827" }}>All Courses</h3>
-          </div>
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead>
-                <tr style={{ background: "#f8fafc" }}>
-                  {["Course Name", "Mode", "Duration", "Total Fees", "Seats", "Entrance Exam"].map((h, i) => (
-                    <th key={i} style={{ padding: "10px 14px", textAlign: "left", fontSize: 12, fontWeight: 700, color: G, borderBottom: "1px solid #e5e7eb", whiteSpace: "nowrap" }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {data.courses.map((c, i) => (
-                  <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#f9fafb", borderBottom: "1px solid #f3f4f6" }}>
-                    <td style={{ padding: "11px 14px", fontSize: 13, fontWeight: 600, color: P, minWidth: 220 }}>{c.name}</td>
-                    <td style={{ padding: "11px 14px", fontSize: 12, color: "#374151", whiteSpace: "nowrap" }}>{c.mode}</td>
-                    <td style={{ padding: "11px 14px", fontSize: 12, color: "#374151", whiteSpace: "nowrap" }}>{c.duration}</td>
-                    <td style={{ padding: "11px 14px", fontSize: 12, fontWeight: 700, color: "#16a34a", whiteSpace: "nowrap" }}>{c.fees}</td>
-                    <td style={{ padding: "11px 14px", fontSize: 12, color: "#374151", whiteSpace: "nowrap" }}>{c.seats || "—"}</td>
-                    <td style={{ padding: "11px 14px", fontSize: 12, color: "#374151", whiteSpace: "nowrap" }}>{c.exam}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <button
+            onClick={() => setExpanded(!expanded)}
+            style={{
+              width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
+              padding: "18px 20px", background: "none", border: "none", cursor: "pointer", textAlign: "left",
+            }}
+          >
+            <span style={{ fontSize: 18, fontWeight: 700, color: "#111827" }}>
+              {data.shortName} Courses and Fees 2026
+            </span>
+            {expanded ? <ChevronUp size={18} color={G} /> : <ChevronDown size={18} color={G} />}
+          </button>
+
+          {expanded && (
+            <div style={{ padding: "0 20px 20px" }}>
+              {data.courseIntro && (
+                <p style={{ fontSize: 13.5, color: "#374151", lineHeight: 1.75, margin: "0 0 18px" }}>
+                  {data.courseIntro}
+                </p>
+              )}
+
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 620 }}>
+                  <thead>
+                    <tr style={{ background: `${P}0A` }}>
+                      <th style={{ padding: "12px 14px", textAlign: "left", fontSize: 13, fontWeight: 700, color: "#111827", borderBottom: "2px solid #f3f4f6" }}>Courses</th>
+                      <th style={{ padding: "12px 14px", textAlign: "left", fontSize: 13, fontWeight: 700, color: "#111827", borderBottom: "2px solid #f3f4f6" }}>Tuition Fees</th>
+                      <th style={{ padding: "12px 14px", textAlign: "left", fontSize: 13, fontWeight: 700, color: "#111827", borderBottom: "2px solid #f3f4f6" }}>Eligibility</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.courseGroups.map((c, i) => (
+                      <tr key={i} style={{ borderBottom: "1px solid #f3f4f6" }}>
+                        <td style={{ padding: "16px 14px", verticalAlign: "top", minWidth: 150 }}>
+                          <button
+                            onClick={() => setActiveCourse(c)}
+                            style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 14, fontWeight: 700, color: P, textAlign: "left" }}
+                          >
+                            {c.name}
+                          </button>
+                          {c.count > 0 && (
+                            <div style={{ fontSize: 12, color: G, marginTop: 2 }}>({c.count} courses)</div>
+                          )}
+                        </td>
+                        <td style={{ padding: "16px 14px", verticalAlign: "top", minWidth: 140 }}>
+                          <div style={{ fontSize: 13, color: "#111827", marginBottom: 4 }}>{c.feeRange}</div>
+                          <button
+                            onClick={() => setActiveCourse(c)}
+                            style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 12.5, fontWeight: 700, color: "#111827", textDecoration: "underline" }}
+                          >
+                            Get Fee Details
+                          </button>
+                        </td>
+                        <td style={{ padding: "16px 14px", verticalAlign: "top", minWidth: 220 }}>
+                          {c.pct12 && (
+                            <div style={{ fontSize: 12.5, color: "#374151", marginBottom: 3 }}>10+2 : {c.pct12}</div>
+                          )}
+                          {c.pctGrad && (
+                            <div style={{ fontSize: 12.5, color: "#374151", marginBottom: 3 }}>Graduation : {c.pctGrad}</div>
+                          )}
+                          {c.exams?.length > 0 && (
+                            <div style={{ fontSize: 12.5, color: "#374151" }}>
+                              Exams : {c.exams.join(", ")}
+                              {c.moreExams > 0 && (
+                                <>
+                                  {" "}
+                                  <button
+                                    onClick={() => setActiveCourse(c)}
+                                    style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 12.5, fontWeight: 700, color: P }}
+                                  >
+                                    +{c.moreExams} More
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
       )}
-
-      {/* Highlights */}
-      <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e5e7eb", padding: 20 }}>
-        <h3 style={{ fontSize: 14, fontWeight: 700, color: "#111827", margin: "0 0 14px" }}>Course Highlights</h3>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 12 }}>
-          {[
-            { label: "Total Courses", value: `${data.courses?.length || 0}+` },
-            { label: "Entrance Exams", value: [...new Set(data.courses?.map(c => c.exam) || [])].join(", ") || "—" },
-            { label: "Course Modes", value: "Full Time" },
-            { label: "Affiliation", value: data.affiliation?.split(" ").slice(0, 3).join(" ") + "..." || "—" },
-          ].map((item, i) => (
-            <div key={i} style={{ background: "#f9fafb", borderRadius: 8, padding: "12px 14px", border: "1px solid #f3f4f6" }}>
-              <div style={{ fontSize: 11, color: G, marginBottom: 4 }}>{item.label}</div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#111827" }}>{item.value}</div>
-            </div>
-          ))}
-        </div>
-      </div>
 
       {/* Scholarships */}
       {data.scholarships?.length > 0 && (
@@ -85,6 +221,10 @@ export default function CoursesSection({ data }) {
             ))}
           </div>
         </div>
+      )}
+
+      {activeCourse && (
+        <CourseDetailModal course={activeCourse} onClose={() => setActiveCourse(null)} P={P} O={O} />
       )}
     </div>
   );
