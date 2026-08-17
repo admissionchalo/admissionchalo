@@ -87,46 +87,36 @@ function CourseDetailModal({ course, onClose, P, O }) {
   );
 }
 
-// `data = {}` below is the actual fix: if the parent ever renders this
-// section before/without a valid college object (e.g. the slug-to-data
-// lookup upstream returned undefined), `data` now safely defaults to an
-// empty object instead of being undefined — so every `data.xxx` read
-// below just resolves to `undefined` (rendering nothing / falling back)
-// instead of throwing "Cannot read properties of undefined".
 export default function CoursesSection({ data = {} }) {
   const P = data.colors?.primary || "#004aad";
   const O = data.colors?.accent || "#f37021";
 
   const [expanded, setExpanded] = useState(true);
   const [activeCourse, setActiveCourse] = useState(null);
+  const [openFaq, setOpenFaq] = useState(-1);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
 
-      {/* Header */}
-      <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e5e7eb", padding: 20 }}>
-        <h2 style={{ fontSize: 17, fontWeight: 700, color: P, margin: "0 0 4px" }}>
-          {data.shortName} Courses & Fees 2026
-        </h2>
-        <p style={{ fontSize: 13, color: G, margin: 0 }}>
-          {data.shortName} offers {data.courseGroups?.length || 0}+ programmes across UG, PG and doctoral levels.
-        </p>
-      </div>
-
-      {/* Grouped Courses & Fees table */}
+      {/* Grouped Courses & Fees table — single header, expandable */}
       {data.courseGroups?.length > 0 && (
         <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e5e7eb", overflow: "hidden" }}>
           <button
             onClick={() => setExpanded(!expanded)}
             style={{
-              width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
-              padding: "18px 20px", background: "none", border: "none", cursor: "pointer", textAlign: "left",
+              width: "100%", display: "flex", justifyContent: "space-between", alignItems: "flex-start",
+              padding: "20px", background: "none", border: "none", cursor: "pointer", textAlign: "left",
             }}
           >
-            <span style={{ fontSize: 18, fontWeight: 700, color: "#111827" }}>
-              {data.shortName} Courses and Fees 2026
-            </span>
-            {expanded ? <ChevronUp size={18} color={G} /> : <ChevronDown size={18} color={G} />}
+            <div>
+              <span style={{ display: "block", fontSize: 17, fontWeight: 700, color: P, marginBottom: 4 }}>
+                {data.shortName} Courses & Fees 2026
+              </span>
+              <span style={{ display: "block", fontSize: 13, color: G }}>
+                {data.shortName} offers {data.courseGroups?.length || 0}+ programmes across UG, PG and doctoral levels.
+              </span>
+            </div>
+            {expanded ? <ChevronUp size={18} color={G} style={{ flexShrink: 0, marginTop: 2 }} /> : <ChevronDown size={18} color={G} style={{ flexShrink: 0, marginTop: 2 }} />}
           </button>
 
           {expanded && (
@@ -203,6 +193,18 @@ export default function CoursesSection({ data = {} }) {
         </div>
       )}
 
+      {/* Course details — additional descriptive content */}
+      {data.courseDetails && (
+        <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e5e7eb", padding: 20 }}>
+          <h3 style={{ fontSize: 15, fontWeight: 700, color: "#111827", margin: "0 0 10px" }}>
+            {data.shortName} Courses
+          </h3>
+          <p style={{ fontSize: 13.5, color: "#374151", lineHeight: 1.75, margin: 0 }}>
+            {data.courseDetails}
+          </p>
+        </div>
+      )}
+
       {/* Scholarships */}
       {data.scholarships?.length > 0 && (
         <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e5e7eb", padding: 20 }}>
@@ -219,6 +221,34 @@ export default function CoursesSection({ data = {} }) {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* FAQs */}
+      {data.courseFaqs?.length > 0 && (
+        <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e5e7eb", padding: 20 }}>
+          <h3 style={{ fontSize: 14, fontWeight: 700, color: "#111827", margin: "0 0 14px" }}>
+            Frequently Asked Questions — Courses
+          </h3>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            {data.courseFaqs.map((faq, i) => {
+              const open = openFaq === i;
+              return (
+                <div key={i} style={{ borderTop: i === 0 ? "none" : "1px solid #f3f4f6" }}>
+                  <button
+                    onClick={() => setOpenFaq(open ? -1 : i)}
+                    style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, padding: "12px 0", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}
+                  >
+                    <span style={{ fontSize: 13.5, fontWeight: 700, color: "#111827" }}>{faq.q}</span>
+                    {open ? <ChevronUp size={16} color={G} style={{ flexShrink: 0 }} /> : <ChevronDown size={16} color={G} style={{ flexShrink: 0 }} />}
+                  </button>
+                  {open && (
+                    <p style={{ margin: "0 0 12px", fontSize: 13, color: "#374151", lineHeight: 1.6 }}>{faq.a}</p>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

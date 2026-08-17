@@ -549,9 +549,6 @@ video {
 .pointer-events-none {
   pointer-events: none;
 }
-.visible {
-  visibility: visible;
-}
 .collapse {
   visibility: collapse;
 }
@@ -754,9 +751,6 @@ video {
 }
 .inline-block {
   display: inline-block;
-}
-.inline {
-  display: inline;
 }
 .flex {
   display: flex;

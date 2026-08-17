@@ -6,22 +6,24 @@ import { HelpCircle, Download, ArrowUpDown, MapPin, Star, Clock, X, ChevronDown,
 import colleges from "../../lib/colleges";
 import TopBar from "../../components/TopBar";
 import Navbar from "../../components/Navbar";
-import OverviewSection   from "./sections/OverviewSection";
-import CoursesSection    from "./sections/CoursesSection";
-import FeesSection       from "./sections/FeesSection";
-import CutoffSection     from "./sections/CutoffSection";
-import AdmissionsSection from "./sections/AdmissionsSection";
-import PlacementsSection from "./sections/PlacementsSection";
-import ReviewsSection    from "./sections/ReviewsSection";
-import FacilitiesSection from "./sections/FacilitiesSection";
-import ClubsSection      from "./sections/ClubsSection";
+import OverviewSection      from "./sections/OverviewSection";
+import CoursesSection       from "./sections/CoursesSection";
+import FeesSection          from "./sections/FeesSection";
+import CutoffSection        from "./sections/CutoffSection";
+import AdmissionsSection    from "./sections/AdmissionsSection";
+import PlacementsSection    from "./sections/PlacementsSection";
+import ReviewsSection       from "./sections/ReviewsSection";
+import FacilitiesSection    from "./sections/FacilitiesSection";
+import ClubsSection         from "./sections/ClubsSection";
+import ScholarshipsSection  from "./sections/ScholarshipsSection";
 
-const TABS = ["Overview", "Courses", "Fees", "Cut-offs", "Admissions", "Placements", "Reviews", "Facilities", "Student Clubs"];
+const TABS = ["Overview", "Courses", "Fees", "Cut-offs", "Admissions", "Scholarships", "Placements", "Reviews", "Facilities", "Student Clubs"];
 
 const TAB_TO_SLUG = {
   "Overview": "overview", "Courses": "courses", "Fees": "fees",
-  "Cut-offs": "cutoffs", "Admissions": "admissions", "Placements": "placements",
-  "Reviews": "reviews", "Facilities": "facilities", "Student Clubs": "student-clubs",
+  "Cut-offs": "cutoffs", "Admissions": "admissions", "Scholarships": "scholarships",
+  "Placements": "placements", "Reviews": "reviews", "Facilities": "facilities",
+  "Student Clubs": "student-clubs",
 };
 const SLUG_TO_TAB = Object.fromEntries(Object.entries(TAB_TO_SLUG).map(([k, v]) => [v, k]));
 
@@ -31,6 +33,7 @@ const TAB_TITLES = {
   "Fees":          (n) => `${n} Fees 2026`,
   "Cut-offs":      (n) => `${n} Cut Off 2026`,
   "Admissions":    (n) => `${n} Admissions 2026`,
+  "Scholarships":  (n) => `${n} Scholarships 2026`,
   "Placements":    (n) => `${n} Placements 2025`,
   "Reviews":       (n) => `${n} Reviews & Ratings`,
   "Facilities":    (n) => `${n} Facilities & Infrastructure`,
@@ -269,15 +272,16 @@ export default function CollegePage({ data }) {
 
   const renderContent = () => {
     switch (activeTab) {
-      case "Overview":      return <OverviewSection   data={data} />;
-      case "Courses":       return <CoursesSection    data={data} />;
-      case "Fees":          return <FeesSection        data={data} />;
-      case "Cut-offs":      return <CutoffSection      data={data} />;
-      case "Admissions":    return <AdmissionsSection  data={data} />;
-      case "Placements":    return <PlacementsSection  data={data} />;
-      case "Reviews":       return <ReviewsSection     data={data} />;
-      case "Facilities":    return <FacilitiesSection  data={data} />;
-      case "Student Clubs": return <ClubsSection       data={data} />;
+      case "Overview":      return <OverviewSection      data={data} />;
+      case "Courses":       return <CoursesSection       data={data} />;
+      case "Fees":          return <FeesSection           data={data} />;
+      case "Cut-offs":      return <CutoffSection         data={data} />;
+      case "Admissions":    return <AdmissionsSection     data={data} />;
+      case "Scholarships":  return <ScholarshipsSection   data={data} />;
+      case "Placements":    return <PlacementsSection     data={data} />;
+      case "Reviews":       return <ReviewsSection        data={data} />;
+      case "Facilities":    return <FacilitiesSection     data={data} />;
+      case "Student Clubs": return <ClubsSection          data={data} />;
       default: return (
         <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e5e7eb", padding: 40, textAlign: "center", color: G }}>
           <div style={{ fontSize: 40, marginBottom: 12 }}>🏗️</div>
@@ -320,7 +324,7 @@ export default function CollegePage({ data }) {
         {heroMobile && <div className="college-hero-bg college-hero-bg--mobile" style={{ backgroundImage: `url(${heroMobile})` }} />}
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(10,10,15,0.72) 0%, rgba(10,10,15,0.82) 100%)", zIndex: 1 }} />
 
-        <div style={{ position: "relative", zIndex: 2, padding: isMobile ? "10px 14px 12px" : "12px 24px 14px" }}>
+        <div style={{ position: "relative", zIndex: 2, width: "100%", boxSizing: "border-box", padding: isMobile ? "10px 20px 12px" : "12px 40px 14px" }}>
 
           {(data.nirf || data.naac) && (
             <div style={{ display: "flex", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
@@ -467,9 +471,9 @@ export default function CollegePage({ data }) {
 
 
       {/* ── BODY ── */}
-      <div style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "12px 12px 50px" : "18px 20px 50px", display: "flex", gap: 20, alignItems: "flex-start" }}>
+      <div style={{ width: "100%", boxSizing: "border-box", padding: isMobile ? "12px 20px 50px" : "18px 40px 50px", display: isMobile ? "block" : "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 340px", gap: 24, alignItems: "flex-start" }}>
 
-        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 18 }}>
+        <div style={{ minWidth: 0, display: "flex", flexDirection: "column", gap: 18 }}>
           <div style={{ fontSize: 12, color: G, display: "flex", alignItems: "center", gap: 5 }}>
             <Clock size={13} /> Updated on <strong>Apr 13 2026, 09:30 AM IST</strong>
           </div>
@@ -477,7 +481,7 @@ export default function CollegePage({ data }) {
         </div>
 
         {!isMobile && (
-          <div style={{ width: 292, flexShrink: 0, display: "flex", flexDirection: "column", gap: 16, position: "sticky", top: topBarHeight + 50, marginTop: 20 }}>
+          <div style={{ minWidth: 0, display: "flex", flexDirection: "column", gap: 16, position: "sticky", top: topBarHeight + 50, marginTop: isMobile ? 0 : 20 }}>
 
             {data.news?.length > 0 && (
               <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e5e7eb", padding: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
