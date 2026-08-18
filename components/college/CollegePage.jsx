@@ -6,24 +6,23 @@ import { HelpCircle, Download, ArrowUpDown, MapPin, Star, Clock, X, ChevronDown,
 import colleges from "../../lib/colleges";
 import TopBar from "../../components/TopBar";
 import Navbar from "../../components/Navbar";
-import OverviewSection      from "./sections/OverviewSection";
-import CoursesSection       from "./sections/CoursesSection";
-import FeesSection          from "./sections/FeesSection";
-import CutoffSection        from "./sections/CutoffSection";
-import AdmissionsSection    from "./sections/AdmissionsSection";
-import PlacementsSection    from "./sections/PlacementsSection";
-import ReviewsSection       from "./sections/ReviewsSection";
-import FacilitiesSection    from "./sections/FacilitiesSection";
-import ClubsSection         from "./sections/ClubsSection";
-import ScholarshipsSection  from "./sections/ScholarshipsSection";
+import OverviewSection   from "./sections/OverviewSection";
+import CoursesSection    from "./sections/CoursesSection";
+import FeesSection       from "./sections/FeesSection";
+import ScholarshipsSection from "./sections/ScholarshipsSection";
+import CutoffSection     from "./sections/CutoffSection";
+import AdmissionsSection from "./sections/AdmissionsSection";
+import PlacementsSection from "./sections/PlacementsSection";
+import ReviewsSection    from "./sections/ReviewsSection";
+import FacilitiesSection from "./sections/FacilitiesSection";
+import ClubsSection      from "./sections/ClubsSection";
 
-const TABS = ["Overview", "Courses", "Fees", "Cut-offs", "Admissions", "Scholarships", "Placements", "Reviews", "Facilities", "Student Clubs"];
+const TABS = ["Overview", "Courses", "Fees", "Scholarships", "Cut-offs", "Admissions", "Placements", "Reviews", "Facilities", "Student Clubs"];
 
 const TAB_TO_SLUG = {
-  "Overview": "overview", "Courses": "courses", "Fees": "fees",
-  "Cut-offs": "cutoffs", "Admissions": "admissions", "Scholarships": "scholarships",
-  "Placements": "placements", "Reviews": "reviews", "Facilities": "facilities",
-  "Student Clubs": "student-clubs",
+  "Overview": "overview", "Courses": "courses", "Fees": "fees", "Scholarships": "scholarships",
+  "Cut-offs": "cutoffs", "Admissions": "admissions", "Placements": "placements",
+  "Reviews": "reviews", "Facilities": "facilities", "Student Clubs": "student-clubs",
 };
 const SLUG_TO_TAB = Object.fromEntries(Object.entries(TAB_TO_SLUG).map(([k, v]) => [v, k]));
 
@@ -31,9 +30,9 @@ const TAB_TITLES = {
   "Overview":      (n) => `${n}: Admission 2026, Cutoff, Courses, Fees, Placements, Ranking`,
   "Courses":       (n) => `${n} Courses & Fees Structure 2026`,
   "Fees":          (n) => `${n} Fees 2026`,
+  "Scholarships":  (n) => `${n} Scholarships 2026`,
   "Cut-offs":      (n) => `${n} Cut Off 2026`,
   "Admissions":    (n) => `${n} Admissions 2026`,
-  "Scholarships":  (n) => `${n} Scholarships 2026`,
   "Placements":    (n) => `${n} Placements 2025`,
   "Reviews":       (n) => `${n} Reviews & Ratings`,
   "Facilities":    (n) => `${n} Facilities & Infrastructure`,
@@ -272,16 +271,16 @@ export default function CollegePage({ data }) {
 
   const renderContent = () => {
     switch (activeTab) {
-      case "Overview":      return <OverviewSection      data={data} />;
-      case "Courses":       return <CoursesSection       data={data} />;
-      case "Fees":          return <FeesSection           data={data} />;
-      case "Cut-offs":      return <CutoffSection         data={data} />;
-      case "Admissions":    return <AdmissionsSection     data={data} />;
-      case "Scholarships":  return <ScholarshipsSection   data={data} />;
-      case "Placements":    return <PlacementsSection     data={data} />;
-      case "Reviews":       return <ReviewsSection        data={data} />;
-      case "Facilities":    return <FacilitiesSection     data={data} />;
-      case "Student Clubs": return <ClubsSection          data={data} />;
+      case "Overview":      return <OverviewSection   data={data} />;
+      case "Courses":       return <CoursesSection    data={data} />;
+      case "Fees":          return <FeesSection        data={data} />;
+      case "Scholarships":  return <ScholarshipsSection data={data} />;
+      case "Cut-offs":      return <CutoffSection      data={data} />;
+      case "Admissions":    return <AdmissionsSection  data={data} />;
+      case "Placements":    return <PlacementsSection  data={data} />;
+      case "Reviews":       return <ReviewsSection     data={data} />;
+      case "Facilities":    return <FacilitiesSection  data={data} />;
+      case "Student Clubs": return <ClubsSection       data={data} />;
       default: return (
         <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e5e7eb", padding: 40, textAlign: "center", color: G }}>
           <div style={{ fontSize: 40, marginBottom: 12 }}>🏗️</div>
@@ -289,6 +288,100 @@ export default function CollegePage({ data }) {
         </div>
       );
     }
+  };
+
+  const renderNewsCard = () => {
+    if (!data.news?.length) return null;
+    return (
+      <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e5e7eb", padding: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+          <div style={{ width: 34, height: 34, borderRadius: 8, background: `${P}14`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <Newspaper size={17} color={P} />
+          </div>
+          <div>
+            <div style={{ fontSize: 11, color: G }}>{data.shortName}</div>
+            <div style={{ fontSize: 14, fontWeight: 800, color: "#111827" }}>News & Updates</div>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
+          {["latest", "popular"].map((t) => (
+            <button
+              key={t}
+              onClick={() => setNewsTab(t)}
+              style={{
+                padding: "5px 14px", borderRadius: 16, border: "none", cursor: "pointer",
+                fontSize: 11.5, fontWeight: 700, textTransform: "capitalize",
+                background: newsTab === t ? P : "#f3f4f6",
+                color: newsTab === t ? "#fff" : G,
+              }}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          {[...data.news]
+            .sort((a, b) => {
+              if (newsTab !== "popular") return 0;
+              const va = parseFloat(a.views) || 0;
+              const vb = parseFloat(b.views) || 0;
+              return vb - va;
+            })
+            .slice(0, 4)
+            .map((n, i) => {
+              const item = typeof n === "string" ? { title: n } : n;
+              const open = openNewsIdx === i;
+              return (
+                <div key={i} style={{ borderTop: i === 0 ? "none" : "1px solid #f3f4f6" }}>
+                  <button
+                    onClick={() => setOpenNewsIdx(open ? -1 : i)}
+                    style={{ width: "100%", display: "flex", gap: 10, alignItems: "flex-start", padding: "10px 0", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}
+                  >
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ margin: "0 0 4px", fontSize: 12.5, fontWeight: 700, color: "#111827", lineHeight: 1.4 }}>
+                        {item.title}
+                      </p>
+                      <div style={{ display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap" }}>
+                        {item.author && <span style={{ fontSize: 10.5, fontWeight: 600, color: "#374151" }}>{item.author}</span>}
+                        {item.author && item.date && <span style={{ color: "#d1d5db", fontSize: 10 }}>·</span>}
+                        {item.date && <span style={{ fontSize: 10.5, color: G }}>{item.date}</span>}
+                      </div>
+                      {item.views && (
+                        <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                          <Eye size={10} color={G} />
+                          <span style={{ fontSize: 10, color: G }}>{item.views} views</span>
+                        </div>
+                      )}
+                    </div>
+                    {item.image && (
+                      <img src={item.image} alt={item.title} style={{ width: 52, height: 52, borderRadius: 7, objectFit: "cover", flexShrink: 0, border: "1px solid #e5e7eb" }} />
+                    )}
+                  </button>
+                  {open && item.detail && (
+                    <div style={{ paddingBottom: 10 }}>
+                      <p style={{ margin: 0, fontSize: 11.5, color: "#4b5563", lineHeight: 1.55 }}>{item.detail}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+        </div>
+
+        <button
+          onClick={() => handleTabChange("Overview")}
+          style={{
+            width: "100%", marginTop: 10, padding: "8px", borderRadius: 20,
+            border: `1.5px solid ${P}`, background: "#fff", color: P,
+            fontSize: 12, fontWeight: 700, cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
+          }}
+        >
+          View all News & Updates <ArrowRight size={13} />
+        </button>
+      </div>
+    );
   };
 
   const heroDesktop = data.heroImage?.desktop;
@@ -477,102 +570,14 @@ export default function CollegePage({ data }) {
           <div style={{ fontSize: 12, color: G, display: "flex", alignItems: "center", gap: 5 }}>
             <Clock size={13} /> Updated on <strong>Apr 13 2026, 09:30 AM IST</strong>
           </div>
+          {isMobile && renderNewsCard()}
           {renderContent()}
         </div>
 
         {!isMobile && (
           <div style={{ minWidth: 0, display: "flex", flexDirection: "column", gap: 16, position: "sticky", top: topBarHeight + 50, marginTop: isMobile ? 0 : 20 }}>
 
-            {data.news?.length > 0 && (
-              <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e5e7eb", padding: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                  <div style={{ width: 34, height: 34, borderRadius: 8, background: `${P}14`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <Newspaper size={17} color={P} />
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 11, color: G }}>{data.shortName}</div>
-                    <div style={{ fontSize: 14, fontWeight: 800, color: "#111827" }}>News & Updates</div>
-                  </div>
-                </div>
-
-                <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
-                  {["latest", "popular"].map((t) => (
-                    <button
-                      key={t}
-                      onClick={() => setNewsTab(t)}
-                      style={{
-                        padding: "5px 14px", borderRadius: 16, border: "none", cursor: "pointer",
-                        fontSize: 11.5, fontWeight: 700, textTransform: "capitalize",
-                        background: newsTab === t ? P : "#f3f4f6",
-                        color: newsTab === t ? "#fff" : G,
-                      }}
-                    >
-                      {t}
-                    </button>
-                  ))}
-                </div>
-
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                  {[...data.news]
-                    .sort((a, b) => {
-                      if (newsTab !== "popular") return 0;
-                      const va = parseFloat(a.views) || 0;
-                      const vb = parseFloat(b.views) || 0;
-                      return vb - va;
-                    })
-                    .slice(0, 4)
-                    .map((n, i) => {
-                      const item = typeof n === "string" ? { title: n } : n;
-                      const open = openNewsIdx === i;
-                      return (
-                        <div key={i} style={{ borderTop: i === 0 ? "none" : "1px solid #f3f4f6" }}>
-                          <button
-                            onClick={() => setOpenNewsIdx(open ? -1 : i)}
-                            style={{ width: "100%", display: "flex", gap: 10, alignItems: "flex-start", padding: "10px 0", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}
-                          >
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                              <p style={{ margin: "0 0 4px", fontSize: 12.5, fontWeight: 700, color: "#111827", lineHeight: 1.4 }}>
-                                {item.title}
-                              </p>
-                              <div style={{ display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap" }}>
-                                {item.author && <span style={{ fontSize: 10.5, fontWeight: 600, color: "#374151" }}>{item.author}</span>}
-                                {item.author && item.date && <span style={{ color: "#d1d5db", fontSize: 10 }}>·</span>}
-                                {item.date && <span style={{ fontSize: 10.5, color: G }}>{item.date}</span>}
-                              </div>
-                              {item.views && (
-                                <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
-                                  <Eye size={10} color={G} />
-                                  <span style={{ fontSize: 10, color: G }}>{item.views} views</span>
-                                </div>
-                              )}
-                            </div>
-                            {item.image && (
-                              <img src={item.image} alt={item.title} style={{ width: 52, height: 52, borderRadius: 7, objectFit: "cover", flexShrink: 0, border: "1px solid #e5e7eb" }} />
-                            )}
-                          </button>
-                          {open && item.detail && (
-                            <div style={{ paddingBottom: 10 }}>
-                              <p style={{ margin: 0, fontSize: 11.5, color: "#4b5563", lineHeight: 1.55 }}>{item.detail}</p>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                </div>
-
-                <button
-                  onClick={() => handleTabChange("Overview")}
-                  style={{
-                    width: "100%", marginTop: 10, padding: "8px", borderRadius: 20,
-                    border: `1.5px solid ${P}`, background: "#fff", color: P,
-                    fontSize: 12, fontWeight: 700, cursor: "pointer",
-                    display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
-                  }}
-                >
-                  View all News & Updates <ArrowRight size={13} />
-                </button>
-              </div>
-            )}
+            {renderNewsCard()}
 
             <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e5e7eb", padding: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
               <div style={{ fontWeight: 700, fontSize: 14, color: "#111827", marginBottom: 14, textAlign: "center" }}>Admissions Open (Nearby Colleges)</div>
