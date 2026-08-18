@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 import { HelpCircle, Download, ArrowUpDown, MapPin, Star, Clock, X, ChevronDown, Newspaper, Eye, ArrowRight } from "lucide-react";
 import colleges from "../../lib/colleges";
 import TopBar from "../../components/TopBar";
 import Navbar from "../../components/Navbar";
 import OverviewSection   from "./sections/OverviewSection";
+import GallerySection    from "./sections/GallerySection";
 import CoursesSection    from "./sections/CoursesSection";
 import FeesSection       from "./sections/FeesSection";
 import ScholarshipsSection from "./sections/ScholarshipsSection";
@@ -15,19 +17,21 @@ import AdmissionsSection from "./sections/AdmissionsSection";
 import PlacementsSection from "./sections/PlacementsSection";
 import ReviewsSection    from "./sections/ReviewsSection";
 import FacilitiesSection from "./sections/FacilitiesSection";
-import ClubsSection      from "./sections/ClubsSection";
+import RankingsSection   from "./sections/RankingsSection";
+import QnASection        from "./sections/QnaSection";
 
-const TABS = ["Overview", "Courses", "Fees", "Scholarships", "Cut-offs", "Admissions", "Placements", "Reviews", "Facilities", "Student Clubs"];
+const TABS = ["Overview", "Courses", "Fees", "Admissions", "Cut-offs", "Scholarships", "Placements", "Rankings", "Reviews", "Gallery", "Facilities", "Q&A"];
 
 const TAB_TO_SLUG = {
-  "Overview": "overview", "Courses": "courses", "Fees": "fees", "Scholarships": "scholarships",
+  "Overview": "overview", "Gallery": "gallery", "Courses": "courses", "Fees": "fees", "Scholarships": "scholarships",
   "Cut-offs": "cutoffs", "Admissions": "admissions", "Placements": "placements",
-  "Reviews": "reviews", "Facilities": "facilities", "Student Clubs": "student-clubs",
+  "Reviews": "reviews", "Facilities": "facilities", "Rankings": "rankings", "Q&A": "qna",
 };
 const SLUG_TO_TAB = Object.fromEntries(Object.entries(TAB_TO_SLUG).map(([k, v]) => [v, k]));
 
 const TAB_TITLES = {
   "Overview":      (n) => `${n}: Admission 2026, Cutoff, Courses, Fees, Placements, Ranking`,
+  "Gallery":       (n) => `${n} Photos & Videos`,
   "Courses":       (n) => `${n} Courses & Fees Structure 2026`,
   "Fees":          (n) => `${n} Fees 2026`,
   "Scholarships":  (n) => `${n} Scholarships 2026`,
@@ -36,7 +40,8 @@ const TAB_TITLES = {
   "Placements":    (n) => `${n} Placements 2025`,
   "Reviews":       (n) => `${n} Reviews & Ratings`,
   "Facilities":    (n) => `${n} Facilities & Infrastructure`,
-  "Student Clubs": (n) => `${n} Student Clubs & Activities`,
+  "Rankings":      (n) => `${n} Rankings 2026`,
+  "Q&A":           (n) => `${n} Questions & Answers`,
 };
 
 const SIDEBAR_COLLEGES = [
@@ -223,7 +228,6 @@ export default function CollegePage({ data }) {
   const [scrolled, setScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [newsTab, setNewsTab] = useState("latest");
-  const [openNewsIdx, setOpenNewsIdx] = useState(-1);
 
   // Only the TopBar stays fixed at the very top
   const topBarRef = useRef(null);
@@ -272,6 +276,7 @@ export default function CollegePage({ data }) {
   const renderContent = () => {
     switch (activeTab) {
       case "Overview":      return <OverviewSection   data={data} />;
+      case "Gallery":       return <GallerySection    data={data} />;
       case "Courses":       return <CoursesSection    data={data} />;
       case "Fees":          return <FeesSection        data={data} />;
       case "Scholarships":  return <ScholarshipsSection data={data} />;
@@ -280,7 +285,8 @@ export default function CollegePage({ data }) {
       case "Placements":    return <PlacementsSection  data={data} />;
       case "Reviews":       return <ReviewsSection     data={data} />;
       case "Facilities":    return <FacilitiesSection  data={data} />;
-      case "Student Clubs": return <ClubsSection       data={data} />;
+      case "Rankings":       return <RankingsSection   data={data} />;
+      case "Q&A":            return <QnASection         data={data} />;
       default: return (
         <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e5e7eb", padding: 40, textAlign: "center", color: G }}>
           <div style={{ fontSize: 40, marginBottom: 12 }}>🏗️</div>
@@ -332,13 +338,13 @@ export default function CollegePage({ data }) {
             .slice(0, 4)
             .map((n, i) => {
               const item = typeof n === "string" ? { title: n } : n;
-              const open = openNewsIdx === i;
               return (
-                <div key={i} style={{ borderTop: i === 0 ? "none" : "1px solid #f3f4f6" }}>
-                  <button
-                    onClick={() => setOpenNewsIdx(open ? -1 : i)}
-                    style={{ width: "100%", display: "flex", gap: 10, alignItems: "flex-start", padding: "10px 0", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}
-                  >
+                <Link
+                  key={i}
+                  href={item.slug ? `/college/${data.id}/news/${item.slug}` : "#"}
+                  style={{ borderTop: i === 0 ? "none" : "1px solid #f3f4f6", textDecoration: "none", display: "block" }}
+                >
+                  <div style={{ width: "100%", display: "flex", gap: 10, alignItems: "flex-start", padding: "10px 0" }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <p style={{ margin: "0 0 4px", fontSize: 12.5, fontWeight: 700, color: "#111827", lineHeight: 1.4 }}>
                         {item.title}
@@ -358,13 +364,8 @@ export default function CollegePage({ data }) {
                     {item.image && (
                       <img src={item.image} alt={item.title} style={{ width: 52, height: 52, borderRadius: 7, objectFit: "cover", flexShrink: 0, border: "1px solid #e5e7eb" }} />
                     )}
-                  </button>
-                  {open && item.detail && (
-                    <div style={{ paddingBottom: 10 }}>
-                      <p style={{ margin: 0, fontSize: 11.5, color: "#4b5563", lineHeight: 1.55 }}>{item.detail}</p>
-                    </div>
-                  )}
-                </div>
+                  </div>
+                </Link>
               );
             })}
         </div>
@@ -560,8 +561,6 @@ export default function CollegePage({ data }) {
           );
         })}
       </div>
-
-
 
       {/* ── BODY ── */}
       <div style={{ width: "100%", boxSizing: "border-box", padding: isMobile ? "12px 20px 50px" : "18px 40px 50px", display: isMobile ? "block" : "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 340px", gap: 24, alignItems: "flex-start" }}>
