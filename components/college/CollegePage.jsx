@@ -44,12 +44,6 @@ const TAB_TITLES = {
   "Q&A":           (n) => `${n} Questions & Answers`,
 };
 
-const SIDEBAR_COLLEGES = [
-  { name: "Galgotias University", desc: "Top-ranked private university in UP. Highest CTC: 1.5 CR", color: "#d90429" },
-  { name: "Sharda University", desc: "Globally recognized. NAAC A+ Accredited. Avg CTC 6.5 LPA", color: "#2563eb" },
-  { name: "NIET Noida", desc: "Top engineering college. Highest CTC: 58 LPA", color: "#7c3aed" },
-];
-
 const COMPARE_SECTIONS = ["Basic Info", "Fees", "Placements", "Cutoffs", "Courses"];
 const G = "#6b7280";
 const ALL_COLLEGES = Object.entries(colleges).map(([id, d]) => ({ id, ...d }));
@@ -245,6 +239,21 @@ export default function CollegePage({ data }) {
 
   const P = data.colors?.primary || "#004aad";
   const O = data.colors?.accent || "#f37021";
+
+  // Pulls other colleges from the real dataset (excludes the current one) — this
+  // list grows automatically as more colleges are added to lib/colleges, instead
+  // of always showing the same 3 hardcoded names.
+  const nearbyColleges = ALL_COLLEGES
+    .filter((c) => c.id !== data.id)
+    .slice(0, 3)
+    .map((c) => ({
+      id: c.id,
+      name: c.shortName || c.name,
+      desc: [c.location, c.naac ? `NAAC ${c.naac}` : null, c.placements?.highest ? `Highest CTC: ${c.placements.highest}` : null]
+        .filter(Boolean)
+        .join(" · "),
+      color: c.colors?.primary || "#1a73e8",
+    }));
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 768);
@@ -578,21 +587,25 @@ export default function CollegePage({ data }) {
 
             {renderNewsCard()}
 
-            <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e5e7eb", padding: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
-              <div style={{ fontWeight: 700, fontSize: 14, color: "#111827", marginBottom: 14, textAlign: "center" }}>Admissions Open (Nearby Colleges)</div>
-              {SIDEBAR_COLLEGES.map((c, i) => (
-                <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start", padding: "10px 0", borderBottom: i < 2 ? "1px solid #f3f4f6" : "none" }}>
-                  <div style={{ width: 34, height: 34, borderRadius: "50%", background: c.color, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <span style={{ color: "#fff", fontSize: 12, fontWeight: 800 }}>{c.name[0]}</span>
+            {nearbyColleges.length > 0 && (
+              <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e5e7eb", padding: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
+                <div style={{ fontWeight: 700, fontSize: 14, color: "#111827", marginBottom: 14, textAlign: "center" }}>Admissions Open (Nearby Colleges)</div>
+                {nearbyColleges.map((c, i) => (
+                  <div key={c.id} style={{ display: "flex", gap: 10, alignItems: "flex-start", padding: "10px 0", borderBottom: i < nearbyColleges.length - 1 ? "1px solid #f3f4f6" : "none" }}>
+                    <div style={{ width: 34, height: 34, borderRadius: "50%", background: c.color, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <span style={{ color: "#fff", fontSize: 12, fontWeight: 800 }}>{c.name[0]}</span>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 700, fontSize: 12, color: "#111827" }}>{c.name}</div>
+                      <div style={{ fontSize: 11, color: G, marginTop: 2, lineHeight: 1.4 }}>{c.desc}</div>
+                    </div>
+                    <Link href={`/college/${c.id}`} style={{ background: O, color: "#fff", border: "none", borderRadius: 5, padding: "5px 9px", fontSize: 11, fontWeight: 700, cursor: "pointer", flexShrink: 0, textDecoration: "none" }}>
+                      Apply
+                    </Link>
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 700, fontSize: 12, color: "#111827" }}>{c.name}</div>
-                    <div style={{ fontSize: 11, color: G, marginTop: 2, lineHeight: 1.4 }}>{c.desc}</div>
-                  </div>
-                  <button style={{ background: O, color: "#fff", border: "none", borderRadius: 5, padding: "5px 9px", fontSize: 11, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}>Apply</button>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
             <div style={{ background: "linear-gradient(135deg,#1a1a2e,#0f3460)", color: "#fff", borderRadius: 10, padding: 16 }}>
               <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 4 }}>Interested in {data.shortName}?</div>

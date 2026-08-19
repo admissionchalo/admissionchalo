@@ -7,7 +7,7 @@ import { announcements } from "../lib/data";
 
 const ICONS = { GraduationCap, FileText, Megaphone };
 
-// Logo path — put the actual file at /public/logo.png (or swap for a Cloudinary URL)
+
 const LOGO_SRC = "/AC-LOGO-PNG.png";
 
 export default function TopBar() {
