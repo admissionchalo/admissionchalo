@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 
 const G = "#6b7280";
+const PAGE_MAX_WIDTH = 1600; // was 1320 — increase/decrease this one value to control overall content width
 
 function formatViews(views) {
   if (!views) return null;
@@ -110,7 +111,7 @@ export default function NewsArticlePage({ data, article }) {
     <div style={{ background: "#f3f4f6", minHeight: "100vh", fontFamily: "Arial, Helvetica, sans-serif", color: "#111827" }}>
 
       <div style={{ background: "#F9B929", borderBottom: "2px solid #E8A317", padding: isMobile ? "9px 14px" : "10px 20px" }}>
-        <div style={{ maxWidth: 1320, margin: "0 auto" }}>
+        <div style={{ maxWidth: PAGE_MAX_WIDTH, margin: "0 auto" }}>
           <button
             onClick={() => router.push(`/college/${data.id}?tab=overview`)}
             style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: "none", cursor: "pointer", fontSize: 11.5, fontWeight: 700, color: "#0A0A0A", padding: 0 }}
@@ -122,13 +123,13 @@ export default function NewsArticlePage({ data, article }) {
 
       <div
         style={{
-          maxWidth: 1320,
+          maxWidth: PAGE_MAX_WIDTH,
           margin: "0 auto",
           padding: isMobile ? "14px 14px 40px" : "18px 24px 0",
           display: isMobile ? "flex" : "grid",
           flexDirection: isMobile ? "column" : undefined,
-          gridTemplateColumns: isMobile ? undefined : "1fr 300px",
-          gap: isMobile ? 16 : 24,
+          gridTemplateColumns: isMobile ? undefined : "1fr 340px",
+          gap: isMobile ? 16 : 28,
           alignItems: "flex-start",
         }}
       >
@@ -348,7 +349,7 @@ export default function NewsArticlePage({ data, article }) {
           </div>
         </article>
 
-        <aside style={{ display: "flex", flexDirection: "column", gap: 16, width: "100%", position: isMobile ? "static" : "sticky", top: isMobile ? undefined : 20 }}>
+        <aside style={{ display: "flex", flexDirection: "column", gap: 16, width: "100%", position: isMobile ? "static" : "sticky", top: isMobile ? undefined : 20, alignSelf: "start" }}>
           {otherNews.length > 0 && (
             <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e5e7eb", padding: 16 }}>
               <div style={{ fontSize: 14, fontWeight: 800, color: "#111827", marginBottom: 12 }}>
@@ -389,11 +390,8 @@ export default function NewsArticlePage({ data, article }) {
         </aside>
       </div>
 
-      {/* ── Full-width "More Articles" grid — fills the page below the two-column
-          layout so wide screens never feel empty, and surfaces every other
-          article (not just the 5 shown in the sidebar). ── */}
       {otherNews.length > 0 && (
-        <div style={{ maxWidth: 1320, margin: "0 auto", padding: isMobile ? "24px 14px 40px" : "32px 24px 56px" }}>
+        <div style={{ maxWidth: PAGE_MAX_WIDTH, margin: "0 auto", padding: isMobile ? "24px 14px 40px" : "32px 24px 56px" }}>
           <h2 style={{ fontSize: isMobile ? 17 : 19, fontWeight: 800, color: "#111827", margin: "0 0 16px" }}>
             More Articles from {data.shortName}
           </h2>
