@@ -58,7 +58,7 @@ export default function TopBar() {
 
       {/* ── Desktop/tablet layout: original single row, unchanged ── */}
       <div className="hidden sm:block bg-white border-b border-charcoal/10">
-        <div className="max-w-7xl mx-auto flex items-center gap-4 px-6 py-2.5">
+        <div className="w-full flex items-center gap-4 px-6 py-2.5 lg:px-10">
           <Image
             src={LOGO_SRC}
             alt="AdmissionChalo"

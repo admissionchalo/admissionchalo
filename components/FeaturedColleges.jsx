@@ -3,7 +3,7 @@ import { featuredColleges } from "../lib/data";
 
 export default function FeaturedColleges() {
   return (
-    <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10">
+    <section className="w-full px-4 py-6 sm:px-6 sm:py-10 lg:px-10">
       <div className="flex overflow-hidden rounded-xl border border-charcoal/10 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
         <div className="flex w-6 shrink-0 items-center justify-center bg-amber-50 sm:w-8">
           <span className="rotate-180 font-heading text-[10px] font-bold tracking-wide text-amber-700/70 [writing-mode:vertical-rl] sm:text-[11px]">
