@@ -36,7 +36,7 @@ export default function Home() {
           <HeroSection/>
           <FeaturedColleges/>
           <main className="bg-graybg">
-      <div className="mx-auto w-[94%] max-w-[1600px] px-0 sm:px-2">
+      <div className="w-full px-4 sm:px-6 lg:px-10">
         <NewsSection />
           <UpcomingExamsSection />
           <CounsellingSection />
