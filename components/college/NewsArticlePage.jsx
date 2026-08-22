@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 const G = "#6b7280";
-const PAGE_MAX_WIDTH = 1600; // was 1320 — increase/decrease this one value to control overall content width
+const SIDE_PADDING = 32; // horizontal breathing room on very large screens
 
 function formatViews(views) {
   if (!views) return null;
@@ -110,22 +110,21 @@ export default function NewsArticlePage({ data, article }) {
   return (
     <div style={{ background: "#f3f4f6", minHeight: "100vh", fontFamily: "Arial, Helvetica, sans-serif", color: "#111827" }}>
 
-      <div style={{ background: "#F9B929", borderBottom: "2px solid #E8A317", padding: isMobile ? "9px 14px" : "10px 20px" }}>
-        <div style={{ maxWidth: PAGE_MAX_WIDTH, margin: "0 auto" }}>
-          <button
-            onClick={() => router.push(`/college/${data.id}?tab=overview`)}
-            style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: "none", cursor: "pointer", fontSize: 11.5, fontWeight: 700, color: "#0A0A0A", padding: 0 }}
-          >
-            <ArrowLeft size={13} /> Back to {data.shortName}
-          </button>
-        </div>
+      <div style={{ background: "#F9B929", borderBottom: "2px solid #E8A317", padding: isMobile ? "9px 14px" : `10px ${SIDE_PADDING}px` }}>
+        <button
+          onClick={() => router.push(`/college/${data.id}?tab=overview`)}
+          style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: "none", cursor: "pointer", fontSize: 11.5, fontWeight: 700, color: "#0A0A0A", padding: 0 }}
+        >
+          <ArrowLeft size={13} /> Back to {data.shortName}
+        </button>
       </div>
 
       <div
         style={{
-          maxWidth: PAGE_MAX_WIDTH,
+          width: "100%",
+          boxSizing: "border-box",
           margin: "0 auto",
-          padding: isMobile ? "14px 14px 40px" : "18px 24px 0",
+          padding: isMobile ? "14px 14px 40px" : `18px ${SIDE_PADDING}px 0`,
           display: isMobile ? "flex" : "grid",
           flexDirection: isMobile ? "column" : undefined,
           gridTemplateColumns: isMobile ? undefined : "1fr 340px",
@@ -391,7 +390,7 @@ export default function NewsArticlePage({ data, article }) {
       </div>
 
       {otherNews.length > 0 && (
-        <div style={{ maxWidth: PAGE_MAX_WIDTH, margin: "0 auto", padding: isMobile ? "24px 14px 40px" : "32px 24px 56px" }}>
+        <div style={{ width: "100%", boxSizing: "border-box", padding: isMobile ? "24px 14px 40px" : `32px ${SIDE_PADDING}px 56px` }}>
           <h2 style={{ fontSize: isMobile ? 17 : 19, fontWeight: 800, color: "#111827", margin: "0 0 16px" }}>
             More Articles from {data.shortName}
           </h2>
