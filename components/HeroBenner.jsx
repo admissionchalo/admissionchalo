@@ -9,12 +9,21 @@ import { heroBanners } from "../lib/data";
 // For desktop we just bump the resolution inside that same segment (in
 // place, not a new chained segment — chaining a second crop after the
 // first would re-crop and undo the resolution bump).
-const withHiResCrop = (url, width, height) =>
+//
+// gravity: Cloudinary's g_auto uses AI to guess the "important" part of
+// the photo — it works great on some images but can crop off a logo or
+// tagline sitting near an edge on others (this is why Bennett looked fine
+// but Sharda/NIET/UPES were getting cut on desktop). Each banner can now
+// set its own `focus` in data.js (e.g. "center", "north", "south", "east",
+// "west", "north_east"...) to override the guess. Defaults to "center",
+// which is far more predictable than "auto" if a banner doesn't set one.
+const withHiResCrop = (url, width, height, gravity = "center") =>
   url
     .replace(/w_\d+,h_\d+/, `w_${width},h_${height}`)
-    .replace("g_auto", "g_auto,dpr_auto");
+    .replace(/g_[a-z_]+/, `g_${gravity},dpr_auto`);
 
-const toDesktopSrc = (url) => withHiResCrop(url, 2400, 900);
+const toDesktopSrc = (banner) =>
+  withHiResCrop(banner.image, 2400, 900, banner.focus || "center");
 
 // Mobile now uses a SEPARATE image per banner (heroBanners[i].mobileImage)
 // instead of auto-cropping the wide desktop photo, once those dedicated
@@ -24,8 +33,8 @@ const toDesktopSrc = (url) => withHiResCrop(url, 2400, 900);
 // no ratio mismatch and no extra cropping while this fallback is in use.
 const toMobileSrc = (banner) =>
   banner.mobileImage
-    ? withHiResCrop(banner.mobileImage, 1200, 1200)
-    : withHiResCrop(banner.image, 1200, 1200);
+    ? withHiResCrop(banner.mobileImage, 1200, 1200, banner.mobileFocus || "center")
+    : withHiResCrop(banner.image, 1200, 1200, banner.focus || "center");
 
 export default function HeroSection() {
   const [query, setQuery] = useState("");
@@ -58,7 +67,7 @@ export default function HeroSection() {
             <div
               className="absolute inset-0 hidden bg-cover bg-center bg-no-repeat opacity-0 animate-hero-fade sm:block"
               style={{
-                backgroundImage: `url(${toDesktopSrc(banner.image)})`,
+                backgroundImage: `url(${toDesktopSrc(banner)})`,
                 animationDelay: `${i * 3}s`,
               }}
             />
